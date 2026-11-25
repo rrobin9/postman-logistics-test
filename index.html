@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Postman Logistics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+/* Three directions share one set of pages. Each direction sets its own tokens and a few structural rules.
+   A "Tools first": slate, squared, dense.  B "Guided": stone, rounded, centred, airy.  C "Journey": graphite, bold, editorial. */
+body{
+  --bg:#E3E7EA;--alt:#D6DCE1;--dark:#2B3943;--card:#F1F3F5;--ink:#1E2A32;--ink2:#55636E;--line:#B2BBC3;--line2:#C9D0D6;
+  --accent:#33556A;--on-accent:#F2F6F8;--on-dark:#E9EEF1;--on-dark2:#A9B6C0;--dline:#4A5B67;
+  --r:5px;--rb:4px;--f:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--hw:600;--ls:0;--pad:54px;
+  --hdr-bg:var(--card);--hdr-ink:var(--ink);--hdr-hover:var(--alt);--strip-bg:var(--dark);--strip-ink:var(--on-dark2);--strip-link:var(--on-dark);
+  --foot-bg:var(--dark);--foot-ink:var(--on-dark);--foot-ink2:var(--on-dark2);--foot-line:#45545F;
+  --have:#27624A;--have-bg:#D9EADF;--partly:#7C5200;--partly-bg:#F2E4C2;--pending:#932E1E;--pending-bg:#F3DAD3;--sample:#28497D;--sample-bg:#D8E2F1;--p2:#56447A;--p2-bg:#E2DCEE;
+  color-scheme:light;
+}
+body[data-l="b"]{
+  --bg:#EEECE7;--alt:#E3E0D8;--dark:#3A3731;--card:#FAF9F6;--ink:#25231E;--ink2:#676258;--line:#C2BDB2;--line2:#D9D5CC;
+  --accent:#5F4660;--on-accent:#FAF7FA;--on-dark:#F1EEE8;--on-dark2:#BBB5A9;--dline:#57534B;
+  --r:18px;--rb:999px;--f:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;--hw:700;--ls:-.02em;--pad:76px;
+  --hdr-bg:var(--bg);--hdr-hover:var(--alt);--strip-bg:var(--alt);--strip-ink:var(--ink2);--strip-link:var(--ink);
+  --foot-bg:var(--alt);--foot-ink:var(--ink);--foot-ink2:var(--ink2);--foot-line:var(--line);
+}
+body[data-l="c"]{
+  --bg:#DEE2E0;--alt:#CBD1CE;--dark:#1C2221;--card:#EDF0EE;--ink:#141918;--ink2:#4D5855;--line:#A6B0AC;--line2:#BFC7C3;
+  --accent:#2E5E57;--on-accent:#F1F6F4;--on-dark:#E8EDEB;--on-dark2:#A2AFAB;--dline:#3C4745;
+  --r:0px;--rb:0px;--f:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;--hw:800;--ls:-.015em;--pad:64px;
+  --hdr-bg:var(--dark);--hdr-ink:var(--on-dark);--hdr-hover:#2D3735;--strip-bg:#111615;--strip-ink:var(--on-dark2);--strip-link:var(--on-dark);
+  --foot-bg:var(--dark);--foot-ink:var(--on-dark);--foot-ink2:var(--on-dark2);--foot-line:var(--dline);
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:90px}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 var(--f)}
+a{color:var(--accent)}
+h1,h2,h3,h4{margin:0;font-weight:var(--hw);line-height:1.15;letter-spacing:var(--ls);text-wrap:balance}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+.w{max-width:1180px;margin:0 auto;padding:0 24px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.stack{display:grid;gap:16px;align-content:start}
+.g20{gap:20px}
+.two{display:grid;grid-template-columns:1.15fr 1fr;gap:44px;align-items:center}
+.note{font-size:13.5px;color:var(--ink2)}
+.lead{font-size:18.5px;color:var(--ink2);max-width:58ch}
+svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* status labels */
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:3px;padding:1px 8px;font:500 12px/1.7 "IBM Plex Sans",system-ui,sans-serif;letter-spacing:0;text-transform:none;white-space:nowrap;border:1px solid;vertical-align:middle}
+.chip::before{content:"";width:8px;height:8px;flex:none}
+.chip.have{background:var(--have-bg);color:var(--have);border-color:var(--have)}
+.chip.have::before{background:var(--have)}
+.chip.partly{background:var(--partly-bg);color:var(--partly);border-color:var(--partly)}
+.chip.partly::before{background:linear-gradient(90deg,var(--partly) 50%,transparent 50%);border:1px solid var(--partly)}
+.chip.pending{background:var(--pending-bg);color:var(--pending);border-color:var(--pending);border-style:dashed}
+.chip.pending::before{border:1.5px solid var(--pending)}
+.chip.sample{background:var(--sample-bg);color:var(--sample);border-color:var(--sample)}
+.chip.sample::before{background:var(--sample);border-radius:50%}
+.chip.p2{background:var(--p2-bg);color:var(--p2);border-color:var(--p2);border-style:dotted}
+.chip.p2::before{background:var(--p2);transform:rotate(45deg) scale(.8)}
+
+/* preview key and layout switch (not part of the website) */
+.key{background:#23292E;color:#C9D1D7;font:400 13.5px/1.5 "IBM Plex Sans",system-ui,sans-serif;padding:8px 0}
+.key .w{display:grid;gap:6px}
+.key b{color:#fff;font-weight:600}
+.lsw{display:inline-flex;border:1px solid #6B7780;border-radius:5px;overflow:hidden}
+.lsw button{background:transparent;border:0;color:#C9D1D7;padding:6px 14px;cursor:pointer;font-weight:500}
+.lsw button+button{border-left:1px solid #6B7780}
+.lsw button[aria-pressed="true"]{background:#E8EDF0;color:#1E2A32}
+#side{position:fixed;left:0;top:42%;z-index:80;display:grid;background:#23292E;border-radius:0 6px 6px 0;overflow:hidden;font:500 12.5px/1 "IBM Plex Sans",system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+#side span{color:#9AA7B0;padding:7px 6px 5px;text-align:center;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase}
+#side button{background:transparent;border:0;border-top:1px solid #3A444B;color:#C9D1D7;width:38px;height:36px;cursor:pointer;font-weight:600}
+#side button[aria-pressed="true"]{background:#E8EDF0;color:#1E2A32}
+
+/* header */
+.strip{background:var(--strip-bg);color:var(--strip-ink);font-size:13.5px}
+.strip .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 18px;padding-top:7px;padding-bottom:7px}
+.strip a{color:var(--strip-link);text-decoration:none}
+.strip a:hover{text-decoration:underline}
+.hdr{position:sticky;top:0;z-index:50;background:var(--hdr-bg);color:var(--hdr-ink);border-bottom:1px solid var(--line)}
+.hdr .w{display:flex;align-items:center;gap:18px;min-height:74px;position:relative}
+.logo{border:1.5px dashed currentColor;padding:7px 14px;text-decoration:none;color:inherit;font:600 15px/1.1 "IBM Plex Sans",system-ui,sans-serif;letter-spacing:.1em;border-radius:var(--r)}
+.logo small{display:block;font-weight:400;letter-spacing:.3em;font-size:10.5px;opacity:.75}
+.nav{display:flex;gap:2px;margin:0 0 0 8px;padding:0;list-style:none;flex:1 1 auto;align-self:stretch}
+.nav>li{display:flex;align-items:center}
+.nav>li.rel{position:relative}
+.top{background:none;border:0;padding:10px 12px;cursor:pointer;text-decoration:none;color:inherit;font-weight:500;display:inline-flex;align-items:center;gap:7px;border-radius:var(--rb);font-size:15.5px}
+.top:hover,.nav>li.open>.top{background:var(--hdr-hover)}
+.top.cur{box-shadow:inset 0 -3px 0 currentColor}
+.car{width:7px;height:7px;border-right:1.5px solid;border-bottom:1.5px solid;transform:rotate(45deg) translateY(-2px)}
+.drop{display:none;position:absolute;top:100%;left:0;right:0;background:var(--card);color:var(--ink);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:0 0 var(--r) var(--r);padding:22px 26px;box-shadow:0 14px 28px rgba(20,28,34,.16);z-index:60}
+.nav>li.open>.drop{display:block}
+.drop.narrow{right:auto;min-width:310px;padding:12px 18px}
+.drop .cols{display:grid;grid-template-columns:repeat(4,1fr);gap:8px 28px}
+.drop h4{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink2);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--line2);font-weight:600}
+.drop a{display:flex;gap:12px;align-items:flex-start;padding:8px 0;text-decoration:none;color:var(--ink);font-weight:500}
+.drop a svg{color:var(--accent);margin-top:2px}
+.drop a small{display:block;font-weight:400;color:var(--ink2);font-size:13px;line-height:1.4}
+.drop a:hover{color:var(--accent)}
+.drop .all{margin-top:10px;padding-top:12px;border-top:1px solid var(--line2);font-weight:400}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid var(--accent);background:var(--accent);color:var(--on-accent);padding:11px 20px;border-radius:var(--rb);text-decoration:none;font-weight:500;cursor:pointer;line-height:1.3}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn:hover{filter:brightness(1.14)}
+.btn.sm{padding:8px 15px}
+.dark .btn,body[data-l="c"] .phero .btn,body[data-l="c"] .hdr .btn{border-color:var(--on-dark);background:var(--on-dark);color:var(--dark)}
+.dark .btn.ghost,body[data-l="c"] .phero .btn.ghost,body[data-l="c"] .hdr .btn.ghost{background:transparent;color:var(--on-dark)}
+.dark .on-light{color:var(--ink)}
+.dark .on-light .btn{border-color:var(--accent);background:var(--accent);color:var(--on-accent)}
+.dark .on-light .btn.ghost{background:transparent;color:var(--accent)}
+.hdr .cta{flex-wrap:nowrap;flex:none}
+.hdr .btn,.mbar .btn{white-space:nowrap}
+.burger{display:none;background:none;border:1px solid currentColor;border-radius:var(--rb);padding:8px 14px;cursor:pointer;margin-left:auto;font-weight:500;color:inherit}
+#bar{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:90;opacity:0}
+#bar.go{animation:load .45s ease-out}
+@keyframes load{0%{width:0;opacity:1}80%{width:100%;opacity:1}100%{width:100%;opacity:0}}
+#view{animation:in .25s ease-out}
+@keyframes in{from{opacity:.35}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){#bar.go,#view{animation:none}}
+
+/* shared blocks */
+.dark{background:var(--dark);color:var(--on-dark)}
+.dark .lead,.dark .note,.dark small{color:var(--on-dark2)}
+.img{min-height:230px;border:1px solid var(--line);background:var(--alt) repeating-linear-gradient(45deg,rgba(0,0,0,.055) 0 14px,transparent 14px 28px);display:grid;place-items:center;text-align:center;padding:18px;color:var(--ink2);font-size:13.5px;border-radius:var(--r)}
+.dark .img,body[data-l="c"] .phero .img{border-color:var(--dline);background:transparent repeating-linear-gradient(45deg,rgba(255,255,255,.075) 0 14px,rgba(255,255,255,.03) 14px 28px);color:var(--on-dark2)}
+.img.s{min-height:72px}
+.sec{padding:var(--pad) 0}
+.sec:nth-of-type(even){background:var(--alt)}
+.sec.dark{background:var(--dark)}
+.sh{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;margin-bottom:24px}
+.sh h2{font-size:clamp(23px,2.7vw,31px)}
+.sh.nh{justify-content:flex-end;margin-bottom:10px}
+.body{display:grid;gap:18px}
+.body p,.body li{max-width:70ch}
+.body ul,.body ol{margin:0;padding-left:22px;display:grid;gap:5px}
+.body h3{font-size:19px}
+.body h4{font-size:16.5px;margin-bottom:3px}
+.need{border:1.5px dashed var(--pending);background:rgba(147,46,30,.05);border-radius:min(var(--r),10px);padding:14px 18px;display:grid;gap:6px;max-width:820px;color:var(--ink);text-align:left}
+.need .tag{font:600 12px/1.5 "IBM Plex Sans",system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--pending)}
+.dark .need{background:rgba(255,255,255,.06);border-color:#E6B5AB;color:var(--on-dark)}
+.dark .need .tag{color:#F0C4BB}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.grid.g3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.tile{border:1px solid var(--line);border-radius:var(--r);padding:20px;background:var(--card);text-decoration:none;color:var(--ink);display:grid;gap:8px;align-content:start;text-align:left}
+a.tile{transition:transform .15s,box-shadow .15s}
+a.tile:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 18px rgba(20,28,34,.12)}
+a.tile b::after{content:" →";color:var(--accent)}
+.tile b{font-weight:var(--hw);font-size:17px;letter-spacing:var(--ls)}
+.tile small{color:var(--ink2);font-size:14px}
+.tile .ic{width:44px;height:44px;border-radius:min(var(--r),12px);background:var(--alt);color:var(--accent);display:grid;place-items:center;margin-bottom:4px}
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;counter-reset:s}
+.flow div{border:1px solid var(--line);border-radius:var(--r);padding:18px;background:var(--card);counter-increment:s;display:grid;gap:6px;align-content:start}
+.flow div::before{content:counter(s);display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--on-accent);font-weight:600}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.kv div{border:1px solid var(--line);padding:14px 16px;border-radius:var(--r);background:var(--card)}
+.kv small{display:block;color:var(--ink2);font-size:13px}
+.kv b{font-weight:600;overflow-wrap:anywhere}
+.dark .kv div{background:transparent;border-color:var(--dline)}
+.kv.count{grid-template-columns:repeat(auto-fit,minmax(165px,1fr))}
+.code{font-size:14px;letter-spacing:0}
+.count b{font-size:36px;line-height:1.1;font-weight:var(--hw);letter-spacing:var(--ls)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px;background:var(--card)}
+th,td{border:1px solid var(--line2);padding:10px 14px;text-align:left;vertical-align:top}
+th{background:var(--alt);font-weight:600}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.f{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px 18px;text-align:left}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{display:grid;gap:4px;font-size:14px;color:var(--ink2)}
+.f input,.f select,.f textarea,.inp{border:1px solid var(--line);background:#FBFCFC;border-radius:min(var(--r),8px);padding:10px 12px;width:100%;min-width:0;color:var(--ink)}
+.f .wide{grid-column:1/-1}
+.steps{list-style:none;padding:0!important;gap:0!important}
+.steps li{padding:8px 0 8px 26px;border-left:2px solid var(--line);margin-left:7px;position:relative}
+.steps li::before{content:"";position:absolute;left:-8px;top:14px;width:14px;height:14px;border-radius:50%;background:var(--card);border:2px solid var(--line)}
+.steps li.done{border-left-color:var(--accent)}
+.steps li.done::before{background:var(--accent);border-color:var(--accent)}
+.person{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:start}
+.tree{columns:3 260px;column-gap:32px}
+.tree>div{break-inside:avoid;margin-bottom:22px}
+.tree h3{font-size:16px;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.tree ul{list-style:none;padding:0;margin:0;display:grid;gap:5px}
+.tree li{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;justify-content:space-between}
+.tree li.sub{padding-left:16px}
+.ticks{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.ticks li{padding-left:28px;position:relative}
+.ticks li::before{content:"";position:absolute;left:4px;top:.45em;width:12px;height:6px;border-left:2px solid;border-bottom:2px solid;transform:rotate(-45deg)}
+.eyebrow{font:600 12px/1.5 "IBM Plex Sans",system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.dark .eyebrow{color:var(--on-dark2)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:11px 12px;cursor:pointer;font-weight:500;color:var(--ink2);display:inline-flex;gap:8px;align-items:center}
+.tabs button[aria-selected="true"]{border-bottom-color:var(--accent);color:var(--ink)}
+
+/* inner page banner */
+.phero{background:var(--alt);padding:26px 0 46px;border-bottom:1px solid var(--line2)}
+.phero h1{font-size:clamp(29px,3.7vw,42px)}
+.crumb{font-size:13.5px;color:var(--ink2);margin-bottom:22px}
+.crumb a{color:inherit}
+.ph.has-img{display:grid;grid-template-columns:1.15fr 1fr;gap:44px;align-items:center}
+
+/* ---------- home A: tools first ---------- */
+.hA{padding:60px 0}
+.hA h1{font-size:clamp(31px,4.3vw,50px);max-width:15ch}
+.ap{background:var(--card);border-radius:var(--r);padding:6px 22px 22px;display:grid;gap:16px;box-shadow:0 18px 40px rgba(0,0,0,.25)}
+.proof{background:var(--card);border-bottom:1px solid var(--line);padding:18px 0}
+.proof .w{display:flex;flex-wrap:wrap;gap:10px 34px;align-items:center}
+.proof div{display:grid}
+.proof small{font-size:12px;color:var(--ink2);letter-spacing:.06em;text-transform:uppercase}
+.proof b{font-weight:600}
+.svcA{display:grid;grid-template-columns:minmax(280px,1fr) 2.1fr;gap:16px}
+.feat{background:var(--dark);color:var(--on-dark);border-radius:var(--r);padding:30px;text-decoration:none;display:grid;gap:14px;align-content:space-between;min-height:320px}
+.feat h3{font-size:30px}
+.feat p,.feat .eyebrow{color:var(--on-dark2)}
+.feat .ic{width:60px;height:60px;border:1px solid var(--dline);display:grid;place-items:center;border-radius:min(var(--r),14px)}
+.feat .ic svg{width:30px;height:30px}
+.feat .more{font-weight:500}
+.feat:hover .more{text-decoration:underline}
+
+/* ---------- home B: guided ---------- */
+.hB{padding:84px 0 60px;text-align:center}
+.hB h1{font-size:clamp(34px,5.4vw,64px);max-width:16ch;margin:0 auto}
+.hB .lead{margin:0 auto;font-size:20px}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:8px}
+.choices button{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:22px 18px;cursor:pointer;display:grid;gap:8px;justify-items:center;font-weight:700;font-size:17px;transition:transform .15s}
+.choices button small{font-weight:400;color:var(--ink2);font-size:14px}
+.choices button svg{width:30px;height:30px;color:var(--accent)}
+.choices button:hover{transform:translateY(-2px)}
+.choices button[aria-selected="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.cpanel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:24px;max-width:860px;margin:0 auto;width:100%;display:grid;gap:14px;justify-items:center}
+.pills{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.pills a,.pills button{border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:9px 18px;text-decoration:none;font-weight:500;cursor:pointer}
+.pills a:hover{border-color:var(--accent);color:var(--accent)}
+.pills button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.pillar{display:grid;gap:8px;text-align:left}
+.pillar .n{font-size:15px;font-weight:700;color:var(--accent)}
+.line{display:grid;grid-template-columns:repeat(4,1fr);gap:0;text-align:left}
+.line div{padding:26px 20px 0 0;border-top:3px solid var(--accent);position:relative;display:grid;gap:6px;align-content:start}
+.line div::before{content:"";position:absolute;top:-9px;left:0;width:15px;height:15px;border-radius:50%;background:var(--accent)}
+
+/* ---------- home C: journey ---------- */
+.hC{padding:72px 0 0}
+.hC h1{font-size:clamp(40px,7.2vw,92px);line-height:.98;max-width:12ch}
+.hC .lead{font-size:20px}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);margin-top:56px;border-top:1px solid var(--dline)}
+.quick a{display:flex;gap:14px;align-items:center;padding:24px 20px;color:var(--on-dark);text-decoration:none;font-weight:700;border-right:1px solid var(--dline)}
+.quick a:first-child{border-left:1px solid var(--dline)}
+.quick a:hover{background:var(--accent)}
+.quick a small{display:block;font-weight:400;color:var(--on-dark2);font-size:13px}
+.jr{display:grid;grid-template-columns:repeat(5,1fr);gap:0}
+.jr button{background:var(--card);border:1.5px solid var(--ink);border-right-width:0;padding:18px 14px;cursor:pointer;text-align:left;display:grid;gap:8px;font-weight:700}
+.jr button:last-child{border-right-width:1.5px}
+.jr button .no{font-size:12px;font-weight:500;color:var(--ink2);letter-spacing:.08em}
+.jr button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.jr button[aria-selected="true"] .no{color:var(--line)}
+.jd{border:1.5px solid var(--ink);border-top:0;background:var(--card);padding:26px;display:grid;grid-template-columns:1.3fr 1fr;gap:28px;align-items:center}
+.spot{display:grid;grid-template-columns:1.1fr 1fr;gap:48px;align-items:center}
+.spot h2{font-size:clamp(30px,4.6vw,56px);line-height:1}
+.rows{display:grid;border-top:1.5px solid var(--ink)}
+.rows a{display:grid;grid-template-columns:44px 1fr 2fr 24px;gap:16px;align-items:center;padding:18px 6px;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.rows a b{font-weight:700;font-size:18px}
+.rows a span{color:var(--ink2)}
+.rows a:hover{background:var(--card)}
+.rows a:hover .ar{transform:translateX(4px)}
+.ar{transition:transform .15s;color:var(--accent);font-weight:700}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tags span{border:1px solid var(--line);padding:6px 12px;background:var(--card);font-size:14.5px;border-radius:var(--rb)}
+
+/* ---------- direction B: site-wide look ---------- */
+body[data-l="b"] .hdr{border-bottom-color:transparent}
+body[data-l="b"] .nav{justify-content:center;margin:0}
+body[data-l="b"] .top.cur{box-shadow:none;background:var(--alt)}
+body[data-l="b"] .drop{border-top-width:1px;border-radius:var(--r);margin-top:6px;border-color:var(--line2)}
+body[data-l="b"] .sh{flex-direction:column;justify-content:center;text-align:center;gap:12px;margin-bottom:32px}
+body[data-l="b"] .sh h2{font-size:clamp(26px,3.3vw,38px)}
+body[data-l="b"] .sh.nh{align-items:center}
+body[data-l="b"] .body{max-width:1000px;margin:0 auto;width:100%}
+body[data-l="b"] .body>p,body[data-l="b"] .body>.need,body[data-l="b"] .body>ul,body[data-l="b"] .body>ol{margin-left:auto;margin-right:auto;width:100%;max-width:70ch}
+body[data-l="b"] .body>.row{justify-content:center}
+body[data-l="b"] .phero{background:var(--bg);border-bottom:0;padding:34px 0 30px;text-align:center}
+body[data-l="b"] .phero h1{font-size:clamp(32px,4.6vw,54px)}
+body[data-l="b"] .ph,body[data-l="b"] .ph.has-img{display:grid;grid-template-columns:1fr;justify-items:center;gap:30px}
+body[data-l="b"] .ph .stack{justify-items:center}
+body[data-l="b"] .ph .row{justify-content:center}
+body[data-l="b"] .ph .img{width:100%;min-height:280px}
+body[data-l="b"] .tile{border-color:var(--line2);padding:24px}
+body[data-l="b"] .foot .bottom{border-top-color:var(--line)}
+body[data-l="b"] .sec.dark{border-radius:28px;margin:0 16px 16px}
+
+/* ---------- direction C: site-wide look ---------- */
+body[data-l="c"] .hdr{border-bottom-color:var(--dline)}
+body[data-l="c"] .top{text-transform:uppercase;font-size:13px;letter-spacing:.05em;font-weight:500;padding:10px 9px}
+body[data-l="c"] .hdr .btn{font-size:12.5px;padding:8px 12px;letter-spacing:.05em}
+body[data-l="c"] .nav{margin-left:2px}
+body[data-l="c"] .btn{text-transform:uppercase;font-size:13.5px;letter-spacing:.07em;font-weight:700}
+body[data-l="c"] .sg{display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:20px 56px;align-items:start}
+body[data-l="c"] .sh{flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:12px;margin:0;padding-top:16px;border-top:4px solid var(--ink)}
+body[data-l="c"] .dark .sh{border-top-color:var(--on-dark)}
+body[data-l="c"] .sh h2{font-size:clamp(24px,2.6vw,32px)}
+body[data-l="c"] .phero{background:var(--dark);color:var(--on-dark);border-bottom:0;padding:26px 0 56px}
+body[data-l="c"] .phero h1{font-size:clamp(36px,6vw,72px);line-height:1}
+body[data-l="c"] .phero .lead,body[data-l="c"] .phero .crumb{color:var(--on-dark2)}
+body[data-l="c"] .tile,body[data-l="c"] .panel,body[data-l="c"] .kv div,body[data-l="c"] .flow div{border-color:var(--ink);border-width:1.5px}
+body[data-l="c"] .dark .kv div{border-color:var(--dline)}
+body[data-l="c"] .tile .ic{background:var(--ink);color:var(--bg)}
+body[data-l="c"] .sec.full .sg{display:block}
+body[data-l="c"] .sec.full .sh{border-top:0;padding-top:0;margin-bottom:26px}
+
+/* footer */
+.foot{background:var(--foot-bg);color:var(--foot-ink2);padding:52px 0 22px;font-size:14.5px}
+.foot .tagline{color:var(--foot-ink);font-size:clamp(20px,2.4vw,28px);font-weight:var(--hw);letter-spacing:var(--ls);margin-bottom:30px;padding-bottom:26px;border-bottom:1px solid var(--foot-line)}
+.foot .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:28px}
+.foot h4{font:600 12px/1.5 "IBM Plex Sans",system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--foot-ink);margin-bottom:10px}
+.foot a{display:block;color:var(--foot-ink2);text-decoration:none;padding:3px 0}
+.foot a:hover{color:var(--foot-ink);text-decoration:underline}
+.foot .bottom{margin-top:32px;padding-top:16px;border-top:1px solid var(--foot-line);display:flex;flex-wrap:wrap;gap:6px 22px;font-size:13.5px}
+.foot .bottom a{display:inline}
+
+/* overlays that real sites have */
+#cookie{position:fixed;left:0;right:0;bottom:0;z-index:70;background:var(--card);border-top:2px solid var(--accent);box-shadow:0 -8px 22px rgba(20,28,34,.16);padding:14px 0;font-size:14.5px}
+#cookie .w{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:center}
+#cookie p{flex:1 1 340px}
+#welcome{position:fixed;left:20px;bottom:20px;z-index:70;max-width:340px;background:var(--card);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:var(--r);padding:16px 18px;box-shadow:0 12px 28px rgba(20,28,34,.2);display:grid;gap:10px;font-size:14.5px}
+#chat{position:fixed;right:20px;bottom:20px;z-index:65;display:grid;justify-items:end;gap:10px}
+#chat-btn{border:0;border-radius:28px;background:var(--accent);color:var(--on-accent);padding:12px 18px;font-weight:500;cursor:pointer;box-shadow:0 8px 20px rgba(20,28,34,.25)}
+#chat-box{width:310px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:0 12px 28px rgba(20,28,34,.2);display:grid;gap:8px;font-size:14.5px}
+#chat-box .msg{background:var(--alt);border-radius:8px;padding:8px 12px}
+.mbar{display:none}
+
+@media (max-width:1240px){.hdr .cta .ghost{display:none}}
+@media (max-width:980px){
+  .burger{display:inline-flex}
+  .hdr .w{flex-wrap:wrap;min-height:62px;padding-top:8px;padding-bottom:8px}
+  .hdr .cta{display:none}
+  .nav,body[data-l="b"] .nav{display:none;flex-direction:column;flex-basis:100%;margin:0;order:9;padding:6px 0 10px;align-items:stretch}
+  .nav.show,body[data-l="b"] .nav.show{display:flex;max-height:calc(100vh - 150px);overflow-y:auto;flex-wrap:nowrap}
+  .nav>li{display:block}
+  .top{width:100%;justify-content:space-between;padding:12px 6px;border-bottom:1px solid var(--line2);border-radius:0}
+  .drop,.drop.narrow,body[data-l="b"] .drop{position:static;box-shadow:none;border:0;border-radius:0;padding:8px 12px 12px;min-width:0;margin:0}
+  .drop .cols{grid-template-columns:1fr 1fr}
+  .two,.ph.has-img,.svcA,.spot,.jd,body[data-l="c"] .sg{grid-template-columns:1fr;gap:24px}
+  body{--pad:40px}
+  .hA,.hB,.hC{padding-top:40px}
+  .person{grid-template-columns:1fr}
+  .quick{grid-template-columns:1fr 1fr;margin-top:36px}
+  .quick a{border-bottom:1px solid var(--dline)}
+  .jr{grid-template-columns:1fr}
+  .jr button{border-right-width:1.5px;border-bottom-width:0}
+  .jr button:last-child{border-bottom-width:1.5px}
+  .jd{border-top:1.5px solid var(--ink);margin-top:12px}
+  .line{grid-template-columns:1fr 1fr;gap:26px 0}
+  .rows a{grid-template-columns:44px 1fr 24px}
+  .rows a span{display:none}
+  .mbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;position:fixed;left:0;right:0;bottom:0;padding:8px 12px;background:var(--card);border-top:1px solid var(--line);z-index:60}
+  body{padding-bottom:62px}
+  #chat{bottom:76px}
+  #welcome{left:8px;bottom:118px}
+  #side{top:auto;bottom:70px;left:8px;grid-auto-flow:column;border-radius:6px}
+  #side span{display:none}
+  #side button{border-top:0;border-left:1px solid #3A444B}
+  body[data-l="b"] .sec.dark{margin:0 8px 8px}
+}
+@media (max-width:560px){.drop .cols,.f2,.line{grid-template-columns:1fr}.w{padding:0 16px}.quick{grid-template-columns:1fr}}
+</style>
+</head>
+<body data-l="a">
+<div id="bar"></div>
+
+<div class="key"><div class="w">
+  <div class="row"><b>Structure preview</b>
+    <span class="lsw" role="group" aria-label="Layout"><button data-l="a" aria-pressed="true">A · Tools first</button><button data-l="b" aria-pressed="false">B · Guided</button><button data-l="c" aria-pressed="false">C · Journey</button></span>
+    <span id="ldesc" style="flex:1 1 320px"></span></div>
+  <div class="row" style="font-size:12.5px"><span>Labels:</span><span class="chip have">Content we have</span><span class="chip partly">Partly ready</span><span class="chip pending">Pending from you</span><span class="chip sample">Sample content</span><span class="chip p2">Phase 2</span><span>Colours, logo and photos come later.</span></div>
+</div></div>
+<div id="side" role="group" aria-label="Layout"><span>Layout</span><button data-l="a" aria-pressed="true" title="A: Tools first">A</button><button data-l="b" aria-pressed="false" title="B: Guided">B</button><button data-l="c" aria-pressed="false" title="C: Journey">C</button></div>
+
+<div class="strip"><div class="w"><span>+91-22-4455 3447 &nbsp;·&nbsp; info@postmanlogistics.com</span><span class="row" style="gap:14px"><a href="#login">Login</a><a href="#hindi-website">English | हिंदी</a><span class="chip p2">Phase 2</span></span></div></div>
+
+<header class="hdr"><div class="w">
+  <a class="logo" href="#home" aria-label="Postman Logistics home">POSTMAN<small>LOGISTICS</small></a>
+  <button class="burger" id="burger" aria-expanded="false" aria-controls="nav">Menu</button>
+  <ul class="nav" id="nav"></ul>
+  <div class="cta row"><a class="btn ghost sm" href="#track">Track Shipment</a><a class="btn sm" href="#get-a-quote">Get a Quote</a></div>
+</div></header>
+
+<main id="view" tabindex="-1"></main>
+<footer class="foot" id="foot"></footer>
+<div class="mbar"><a class="btn ghost sm" href="#track">Track Shipment</a><a class="btn sm" href="#get-a-quote">Get a Quote</a></div>
+
+<div id="cookie"><div class="w"><p><b>We use cookies.</b> They help us measure visits and improve this website. You can accept or decline analytics cookies. <a href="#cookie-policy">Cookie Policy</a> <span class="chip sample">Sample content</span></p><span class="row"><button class="btn sm" id="ck-yes">Accept</button><button class="btn ghost sm" id="ck-no">Decline</button></span></div></div>
+<div id="welcome" hidden><span><b>Welcome to Postman Logistics</b> <span class="chip sample">Sample content</span></span><span>Need a price or want to check a shipment? Start here.</span><span class="row"><a class="btn sm" href="#get-a-quote">Get a Quote</a><a class="btn ghost sm" href="#track">Track Shipment</a></span><button class="btn ghost sm" id="wl-x" style="justify-self:start">Close</button></div>
+<div id="chat"><div id="chat-box" hidden><b>Postman Logistics assistant <span class="chip p2">Phase 2</span></b><div class="msg">Hello. I can answer questions, give tracking status, or take your enquiry details. How can I help?</div><span class="note">The AI assistant is added in Phase 2, on the website and on WhatsApp. <a href="#ai-assistant">See what it will do</a></span></div><button id="chat-btn" aria-expanded="false" aria-controls="chat-box">Chat with us</button></div>
+
+<script>
+/* ---------- helpers ---------- */
+const ST={have:"Content we have",partly:"Partly ready",pending:"Pending from you",sample:"Sample content",p2:"Phase 2"};
+const TIP={have:"This text is on your current website. It is shown shortened and will be rewritten.",partly:"Some text exists on your current website. More details are needed from you.",pending:"Nothing exists yet. This is needed from you.",sample:"New text or a new tool. A sample is shown for you to react to.",p2:"Built in Phase 2, after the website is live."};
+const chip=s=>`<span class="chip ${s}" title="${TIP[s]}">${ST[s]}</span>`;
+const need=a=>`<div class="need"><p class="tag">Pending from you</p><ul>${a.map(x=>`<li>${x}</li>`).join("")}</ul></div>`;
+const img=(t,c)=>`<div class="img${c?" "+c:""}">${t}</div>`;
+const btn=(t,to,g)=>`<a class="btn${g?" ghost":""}" href="#${to}">${t}</a>`;
+const IC={
+ box:'<path d="M3 8l9-5 9 5v8l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+ container:'<rect x="2" y="6" width="20" height="12"/><path d="M7 9v6M12 9v6M17 9v6"/>',
+ wave:'<path d="M2 18c2 0 2-2 4-2s2 2 4 2 2-2 4-2 2 2 4 2 2-2 4-2"/><path d="M4 13l2-6h12l2 6M9 7V4h6v3"/>',
+ plane:'<path d="M21 3L3 10l7 3 3 7z"/><path d="M10 13l11-10"/>',
+ truck:'<path d="M2 6h11v10H2zM13 9h5l4 4v3h-9z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
+ pin:'<path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+ doc:'<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 14l2 2 4-4"/>',
+ crane:'<path d="M5 21V5l14-2v4H9M9 7v14M3 21h10M17 7v5"/><rect x="15" y="12" width="4" height="4"/>',
+ warehouse:'<path d="M3 10l9-6 9 6v10H3z"/><path d="M8 20v-7h8v7M8 16h8"/>',
+ quote:'<path d="M5 3h14v18l-2.5-2-2.5 2-2-2-2 2-2.5-2L5 21z"/><path d="M9 8h6M9 12h6"/>',
+ track:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>',
+ cal:'<rect x="3" y="5" width="18" height="16"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+ calc:'<rect x="5" y="2" width="14" height="20"/><path d="M8 6h8M8 11h2M14 11h2M8 15h2M14 15h2M8 18h2M14 18h2"/>',
+ globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3.5 3 3.5 15 0 18M12 3c-3.5 3-3.5 15 0 18"/>',
+ book:'<path d="M5 3h12a2 2 0 012 2v16H7a2 2 0 01-2-2z"/><path d="M9 8h6M9 12h6"/>',
+ chat:'<path d="M4 5h16v11H9l-5 4z"/>',
+ people:'<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.700 6 6M16 5a3 3 0 010 6M18 14c2 .8 3 2.800 3 6"/>'
+};
+const ic=n=>`<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${IC[n]}</svg>`;
+const ICF={"lcl-consolidation":"box","fcl":"container","coastal-shipping":"wave","air-freight":"plane","inland-transport":"truck","first-mile-last-mile":"pin","customs-clearance":"doc","project-break-bulk":"crane","warehousing-cold-chain":"warehouse",
+ "get-a-quote":"quote","quote-lcl":"box","quote-fcl":"container","quote-air":"plane","quote-ddp-ddu":"doc","quote-coastal":"wave","quote-first-last-mile":"pin","quote-airport-lcl-cbt":"plane",
+ "track":"track","lcl-schedules":"cal","cbm-calculator":"calc","serviceable-areas":"pin","network":"globe","blog":"book","incoterms":"book","faqs":"chat","restricted-cargo":"doc","contact-us":"chat","about-us":"people","careers":"people","industries":"globe"};
+const tiles=(a,c)=>`<div class="grid${c?" "+c:""}">${a.map(([to,b,s])=>to?`<a class="tile" href="#${to}">${ICF[to]?`<span class="ic">${ic(ICF[to])}</span>`:""}<b>${b}</b><small>${s||""}</small></a>`:`<div class="tile"><b>${b}</b><small>${s||""}</small></div>`).join("")}</div>`;
+const logos=`<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">${img("Client logo","s").repeat(6)}</div>`;
+
+/* ---------- enquiry forms ---------- */
+const WHO=[["Company name"],["Contact person"],["Email","email"],["Phone","tel"]];
+const LIST=["Select from list"];
+const FORMS={
+  lcl:[["Direction","select",["Import","Export"]],["Port of loading (POL)","select",LIST],["Port of discharge (POD)","select",LIST],["Commodity","select",LIST],["Number of packages","number"],["Length × width × height (cm)"],["Gross weight (kg)","number"],["Volume (CBM), calculated for you"],["Incoterm","select",["EXW","FCA","FOB","CFR","CIF","DAP","DDP"]],["Cargo ready date","date"]],
+  fcl:[["Direction","select",["Import","Export","Cross trade"]],["Port of loading (POL)","select",LIST],["Port of discharge (POD)","select",LIST],["Container type","select",["20'","40'","40' HC","Reefer","Open top","Flat rack"]],["Number of containers","number"],["Commodity","select",LIST],["Gross weight per container (kg)","number"],["Stuffing","select",["Factory stuffing","Dock stuffing"]],["Cargo ready date","date"]],
+  air:[["Direction","select",["Import","Export"]],["Origin airport","select",LIST],["Destination airport","select",LIST],["Commodity","select",LIST],["Number of pieces","number"],["Length × width × height (cm)"],["Gross weight (kg)","number"],["Volumetric weight (kg), calculated for you"],["Cargo ready date","date"]],
+  ddp:[["Delivery term","select",["DDP (duty paid)","DDU (duty unpaid)"]],["Mode","select",["Sea LCL","Sea FCL","Air"]],["Pick-up country and city"],["Delivery address"],["Delivery PIN code"],["Commodity","select",LIST],["HS code, if known"],["Invoice value"],["Currency","select",LIST],["Gross weight (kg)","number"],["Volume (CBM)"]],
+  coastal:[["Load port","select",LIST],["Discharge port","select",LIST],["Cargo type","select",["Containerised","Break-bulk","Bulk"]],["Commodity","select",LIST],["Quantity or number of containers"],["Gross weight (tonnes)","number"],["Cargo ready date","date"]],
+  fmlm:[["Move type","select",["First mile (pick-up)","Last mile (delivery)"]],["Pick-up PIN code or port / ICD / CFS"],["Delivery PIN code or port / ICD / CFS"],["Vehicle type","select",LIST],["Number of packages","number"],["Gross weight (kg)","number"],["Pick-up date","date"]],
+  cbt:[["Airport","select",LIST],["Direction","select",["Import","Export"]],["Commodity","select",LIST],["Number of pieces","number"],["Gross weight (kg)","number"],["Length × width × height (cm)"],["Cargo ready date","date"]],
+  svc:[["Location or route"],["Cargo details"],["Expected start date","date"]],
+  contact:[]
+};
+let fid=0;
+function form(k,product){
+  const all=[...(k==="contact"?[["Name"],["Email","email"],["Phone","tel"]]:WHO),...FORMS[k]];
+  const inputs=all.map(([l,ty,o])=>{const id="f"+(++fid);return `<label for="${id}">${l}${ty==="select"?`<select id="${id}">${o.map(x=>`<option>${x}</option>`).join("")}</select>`:`<input id="${id}" type="${ty||"text"}">`}</label>`}).join("");
+  const id="f"+(++fid);
+  return `<form class="f panel" data-quote="${product}" novalidate>${inputs}<label class="wide" for="${id}">${k==="contact"?"Message":"Remarks"}<textarea id="${id}" rows="3"></textarea></label><div class="wide row"><button class="btn" type="submit">Submit enquiry</button></div></form>`;
+}
+const qform=(k,product,h2,extra)=>({h2,st:"pending",b:need(["The field list for this form, from page 5 of your RFQ reference document. The fields below are a sample until then."+(extra?" "+extra:""),"Your lists of ports, ICDs and CFS, commodities and currencies, for the \"Select from list\" fields."])+form(k,product)});
+const sform=name=>({h2:"Enquire about "+name,st:"sample",b:form("svc",name)});
+const faq=qs=>({h2:"Common questions",st:"sample",b:qs.map(([q,a])=>`<div><h4>${q}</h4><p>${a}</p></div>`).join("")});
+
+/* ---------- pages ---------- */
+const P={},ORDER=[];
+function page(id,o){o.id=id;P[id]=o;ORDER.push(id)}
+
+page("home",{t:"Home",url:"/",st:"partly",secs:[]});
+
+page("services",{t:"Services",url:"/services/",st:"sample",hero:{p:"One team for sea, air and land. Pick a service to see how it works and to send an enquiry.",st:"sample"},secs:[
+ {h2:"Ocean",st:"sample",b:tiles([["lcl-consolidation","LCL Consolidation","Share a container and pay for the space you use."],["fcl","FCL","A full container for one shipper, with special equipment when needed."],["coastal-shipping","Coastal Shipping","Move cargo between Indian ports by sea."]],"g3")},
+ {h2:"Air",st:"sample",b:tiles([["air-freight","Air Freight","For urgent and high-value cargo."]],"g3")},
+ {h2:"Land",st:"sample",b:tiles([["inland-transport","Inland Transport","Road, rail and EXIM transport across India."],["first-mile-last-mile","First-Mile / Last-Mile","Pick-up and delivery to and from ports, ICDs, CFS and airports."]],"g3")},
+ {h2:"Specialised and support",st:"sample",b:tiles([["customs-clearance","Customs Clearance","Import and export clearance."],["project-break-bulk","Project & Break-Bulk Cargo","Heavy, oversized and bulk cargo."],["warehousing-cold-chain","Warehousing & Cold Chain","Storage, distribution and temperature-controlled cargo."]],"g3")}
+]});
+
+page("lcl-consolidation",{t:"LCL Consolidation",url:"/services/lcl-consolidation/",st:"have",hero:{p:"Import and export consolidation through a worldwide partner network. Share a container and pay for the space you use.",st:"sample",cta:[["Get an LCL quote","quote-lcl"],["View LCL schedules","lcl-schedules",1]],img:"Photo: LCL cargo at a CFS or warehouse.<br>Pending from you."},secs:[
+ {h2:"Sea freight at Postman Logistics",st:"have",b:`<p>At Postman Logistics, our sea freight services offer unrestricted capacity for goods of any size or weight. We excel in Consolidation, Groupage and Multimodal Transportation solutions, linking destinations globally with efficiency and precision.</p><p>Leveraging our extensive business volume, we negotiate competitive rates with Liners and NVOCCs and our strong relationships with various liners afford our clients flexible sailing schedules on selected routes.</p>`},
+ {h2:"LCL import consolidation",st:"have",b:`<p>LCL stands for "Less Than Container Load" and this is an ideal option for a small cargo which is less than "Full Container Load". Loads from multiple shippers are stuffed into a single container and shipped to a common destination for delivering multiple shipments consigned to different buyers.</p><p>Postman Logistics offers inbound services from major ports across the world at reasonable freight levels and excellent transit services through the dedicated network of worldwide partners and efficient overseas agents.</p><p>Ex-factory pick-up, warehouse, consolidation, ICD/CFS, port and delivery at doorstep.</p>`},
+ {h2:"LCL export forwarding",st:"have",b:`<p>At Postman Logistics, we specialize in Less than Container Load (LCL) export forwarding, a crucial service for businesses needing to ship smaller cargo quantities without the need for a full container. Our large shipping volumes allow us to offer competitive rates and excellent service from carriers.</p><p>We cater to emerging and midsized forwarders, in-house logistics departments, and large corporations with long-term contracts.</p>`},
+ {h2:"Routes and ports",st:"pending",b:need(["Import origins and export destinations you consolidate for, with the Indian ports and ICDs used.","Typical transit times on your main routes."])},
+ {h2:"Plan your shipment",st:"sample",b:tiles([["lcl-schedules","LCL Schedules & Space","Sailings, cut-offs and space"],["cbm-calculator","CBM Calculator","Work out your volume"],["quote-ddp-ddu","Door delivery (DDP / DDU)","Enquire for delivered-duty shipments"]],"g3")},
+ faq([["What is LCL?","LCL means Less than Container Load. Your cargo shares a container with other shippers' cargo, and you pay for the space you use."],["How is LCL freight charged?","By volume in CBM or by weight, whichever gives the higher figure. The CBM calculator shows both."]]),
+ qform("lcl","LCL","Request an LCL quote")
+]});
+
+page("fcl",{t:"FCL",url:"/services/fcl/",st:"have",hero:{p:"Full container shipments for import, export and cross trade, with special equipment when your cargo needs it.",st:"sample",cta:[["Get an FCL quote","quote-fcl"]],img:"Photo: containers or a container yard.<br>Pending from you."},secs:[
+ {h2:"FCL services: import, export, cross trade",st:"have",b:`<p>FCL refers to a Full Container Load exclusively booked by a single shipper from the origin port of loading, consigned to a single buyer at the destination. FCL is a core competency at Postman Logistics, offering enhanced safety and security throughout the journey.</p><p>We cater to customized needs of special equipment, like Open Top, Flat Rack, Tank and Reefer containers to carry ODC, liquid and refrigerated cargo, and ensure safe handling whether it's factory stuffing or dock stuffing.</p>`},
+ {h2:"Container types",st:"sample",b:tiles([["","20' standard","General cargo"],["","40' standard","General cargo, larger volume"],["","40' high cube","Extra height"],["","Reefer","Temperature-controlled cargo"],["","Open top","Over-height cargo"],["","Flat rack","Over-width and heavy cargo"]])},
+ {h2:"Hazardous cargo",st:"pending",b:need(["Your policy on hazardous cargo. Your current FCL text says hazardous goods are carried, while your Dangerous Goods page says they are not accepted."])},
+ {h2:"Routes and ports",st:"pending",b:need(["Main trade lanes, and the Indian ports and ICDs you ship FCL from and to."])},
+ qform("fcl","FCL","Request an FCL quote")
+]});
+
+page("coastal-shipping",{t:"Coastal Shipping",url:"/services/coastal-shipping/",st:"partly",hero:{p:"Move cargo between Indian ports by sea, as part of a multimodal plan.",st:"sample",cta:[["Get a coastal quote","quote-coastal"]],img:"Photo: a coastal vessel or port.<br>Pending from you."},secs:[
+ {h2:"Multimodal and coastal",st:"partly",b:`<p>Recognizing diverse cargo needs, we offer tailored multimodal logistics services. Integrating road, rail, sea, and air transport, we optimize efficiency and reliability. Whether your cargo requires speed, security, or specialized handling, we design a customized solution to meet your needs.</p>`+need(["This is the only text on your current website. It does not describe coastal shipping itself, so more is needed."])},
+ {h2:"Coastal routes and cargo",st:"pending",b:need(["The Indian ports you connect by coastal shipping, and how often.","Cargo types you move by coast: containers, break-bulk, bulk.","Why a customer should choose coastal over road or rail, in your words."])},
+ qform("coastal","Coastal","Request a coastal quote")
+]});
+
+page("air-freight",{t:"Air Freight",url:"/services/air-freight/",st:"partly",hero:{p:"When your supply chain needs speed, reliability and a higher level of security.",st:"have",cta:[["Get an air freight quote","quote-air"]],img:"Photo: air cargo handling.<br>Pending from you."},secs:[
+ {h2:"Speed and accuracy",st:"have",b:`<p>Air freight is a suitable solution when your supply chain requires speed, reliability and enhanced levels of security. It is normally used for high-value shipments.</p><p>Our team understands that Air Freight is all about speed and accuracy. Our documentation team ensures that proper process is followed so that your shipment reaches right on time.</p><p>We have strong relations with efficient forwarders across the globe.</p>`},
+ {h2:"Airports and cargo handled",st:"pending",b:need(["Airports you operate from in India, and main destinations.","Whether you handle hazardous cargo, live animals and perishables by air. Your current Air Freight page says yes, your Banned Commodities page says no."])},
+ {h2:"LCL / CBT from airports",st:"pending",b:need(["What this service covers. The proposal treats it as a dedicated enquiry form, with exact scope to confirm."])+`<div class="row">${btn("Airport LCL / CBT enquiry","quote-airport-lcl-cbt",1)}</div>`},
+ qform("air","Air Freight","Request an air freight quote")
+]});
+
+page("inland-transport",{t:"Inland Transport",url:"/services/inland-transport/",st:"have",hero:{p:"Customized transportation for pan India operations, by road and rail.",st:"have",cta:[["Enquire now","inland-transport"]],img:"Photo: your trucks or trailers.<br>Pending from you."},secs:[
+ {h2:"Land-side logistics",st:"have",b:`<p>At Postman Logistics, we specialize in delivering customized transportation solutions for pan India operations. Our team of experts ensures the safety and security of your goods throughout the supply chain.</p><p>Our land-side logistics services cater to diverse client needs, offering transportation via road and rail, along with first-mile, last-mile, and import/export services, ensuring timely and cost-effective delivery.</p><p>With pan India presence, we offer one of the widest ranges of domestic locations for pick-up and delivery of international cargo with competitive rates and reliable transit times, for LCL, FCL and project shipments.</p>`},
+ {h2:"Domestic transportation",st:"have",b:`<p>We maintain a reliable road network connecting regions nationwide. Partnering with trusted carriers, we ensure top-tier service. Our road connectivity guarantees timely delivery of your cargo, whether it's headed to a city or a remote town.</p>`},
+ {h2:"Rail transportation",st:"have",b:`<p>We offer reliable railway freight services for swift and efficient goods movement. Our meticulously planned rail services meet your specific needs and timelines. With our expertise and strategic partnerships, we optimize routes and schedules to minimize transit times.</p>`},
+ {h2:"Coverage",st:"pending",b:need(["Main routes and regions, and the vehicle types available."])},
+ sform("Inland Transport")
+]});
+
+page("first-mile-last-mile",{t:"First-Mile / Last-Mile",url:"/services/first-mile-last-mile/",st:"partly",hero:{p:"Pick-up and delivery to and from ports, ICDs, CFS and airports.",st:"sample",cta:[["Get a pick-up or delivery quote","quote-first-last-mile"],["Check a PIN code","serviceable-areas",1]],img:"Photo: a pick-up or delivery vehicle.<br>Pending from you."},secs:[
+ {h2:"From pick-up to drop-off",st:"have",b:`<p>We offer comprehensive first-mile and last-mile services from major airports, railway stations, and seaports. Our efficient pick-up and delivery ensure your goods reach their destination smoothly and reliably.</p><p>We handle every step of first-mile and last-mile delivery, ensuring efficient service from pick-up to drop-off.</p>`},
+ {h2:"Areas, vehicles and timings",st:"pending",b:need(["Serviceable PIN codes or regions.","Vehicle types and load sizes.","Rate table in Excel, for indicative quotes."])},
+ qform("fmlm","First-Mile / Last-Mile","Request a pick-up or delivery quote")
+]});
+
+page("customs-clearance",{t:"Customs Clearance",url:"/services/customs-clearance/",st:"pending",hero:{p:"Import and export clearance for your shipments.",st:"sample",img:"Photo: documentation or port operations.<br>Pending from you."},secs:[
+ {h2:"What we handle",st:"pending",b:need(["What you handle: import clearance, export clearance, documentation, duty payment, any special schemes.","Licences or registrations that apply to this service."])+`<p class="note">Your current website offers customs clearance to six industry groups but has no page or text about it.</p>`},
+ {h2:"Where we clear cargo",st:"pending",b:need(["The ports, ICDs and airports where you clear cargo."])},
+ {h2:"Documents and timelines",st:"pending",b:need(["Documents a customer must provide, and typical clearance times."])},
+ sform("Customs Clearance")
+]});
+
+page("project-break-bulk",{t:"Project & Break-Bulk Cargo",url:"/services/project-break-bulk-cargo/",st:"have",hero:{p:"Heavy, oversized and bulk cargo, planned and moved from origin to destination.",st:"sample",img:"Photo: an oversized or heavy-lift move.<br>Pending from you."},secs:[
+ {h2:"Project cargo logistics",st:"have",b:`<p>Handling large-scale, complex shipments requires expertise and precision. From planning to execution, we manage every aspect of your project cargo needs. Whether it's heavy machinery, oversized equipment, or delicate components, our experienced team ensures seamless transportation from origin to destination.</p><p>We tailor our solutions to meet the unique requirements of each project, providing specialized equipment, route optimization, and comprehensive risk management.</p>`},
+ {h2:"Break bulk and bulk cargo",st:"have",b:`<p>For break bulk cargo, which includes goods too large or heavy to fit into standard containers, we offer specialized handling and transportation services. Our experienced team ensures safe loading, securing, and unloading of these oversized items.</p><p>Our expertise in bulk cargo handling enables us to manage the transportation of large quantities of homogeneous goods, such as grains, ores, or liquids, efficiently and cost-effectively.</p>`},
+ {h2:"Projects we have moved",st:"pending",b:need(["One or two project moves you can describe, with the client's permission. Optional, but it builds trust."])},
+ sform("Project & Break-Bulk Cargo")
+]});
+
+page("warehousing-cold-chain",{t:"Warehousing & Cold Chain",url:"/services/warehousing-cold-chain/",st:"partly",hero:{p:"Storage, distribution and temperature-controlled cargo.",st:"sample",img:"Photo: your warehouse.<br>Pending from you."},secs:[
+ {h2:"Warehousing and distribution",st:"have",b:`<p>We offer primary and secondary distribution services, along with intracity transportation. Specializing in warehousing and distribution, we provide efficient storage and seamless delivery solutions. Our network ensures timely delivery to your customers.</p>`},
+ {h2:"Cold chain",st:"have",b:`<p>We excel in Cold Chain logistics, ensuring safe and efficient transport of temperature-sensitive goods. From pharmaceuticals to perishable foods, our specialized handling and temperature-controlled facilities maintain product integrity throughout the journey.</p>`},
+ {h2:"Our facilities",st:"pending",b:need(["Warehouse locations and sizes, and whether they are your own or partner facilities.","Temperature ranges you can hold for cold chain cargo.","Whether \"Cargo Terminals\", named on your About page, belongs here."])},
+ sform("Warehousing & Cold Chain")
+]});
+
+page("get-a-quote",{t:"Get a Quote",url:"/get-a-quote/",st:"sample",hero:{p:"Pick what you want to ship. Each form asks only what we need for that product, and you get a reference number as soon as you submit.",st:"sample"},secs:[
+ {h2:"What would you like a quote for?",st:"sample",b:tiles([["quote-lcl","LCL","Less than a container"],["quote-fcl","FCL","Full container"],["quote-air","Air Freight","By air"],["quote-ddp-ddu","DDP / DDU","Delivered to the door"],["quote-coastal","Coastal","Between Indian ports"],["quote-first-last-mile","First-Mile / Last-Mile","Pick-up or delivery"],["quote-airport-lcl-cbt","Airport LCL / CBT","From airports"]])},
+ {h2:"Not sure which one?",st:"sample",b:`<p>Tell us about your cargo and we will suggest the right option.</p><div class="row">${btn("Contact us","contact-us",1)}${btn("Open the CBM calculator","cbm-calculator",1)}</div>`}
+]});
+
+[["quote-lcl","LCL enquiry","/get-a-quote/lcl/","lcl","LCL","An indicative rate is shown when a matching rate exists."],
+ ["quote-fcl","FCL enquiry","/get-a-quote/fcl/","fcl","FCL","Tell us the container type and route."],
+ ["quote-air","Air Freight enquiry","/get-a-quote/air-freight/","air","Air Freight","Volumetric weight is worked out from your dimensions."],
+ ["quote-ddp-ddu","DDP / DDU enquiry","/get-a-quote/ddp-ddu/","ddp","DDP / DDU","For shipments delivered to the door, duty paid or unpaid."],
+ ["quote-coastal","Coastal enquiry","/get-a-quote/coastal/","coastal","Coastal","For cargo moving between Indian ports."],
+ ["quote-first-last-mile","First-Mile / Last-Mile enquiry","/get-a-quote/first-mile-last-mile/","fmlm","First-Mile / Last-Mile","For pick-up or delivery."],
+ ["quote-airport-lcl-cbt","Airport LCL / CBT enquiry","/get-a-quote/airport-lcl-cbt/","cbt","Airport LCL / CBT","For LCL / CBT enquiries from airports."]
+].forEach(([id,t,url,k,prod,lead])=>page(id,{t,url,st:"pending",up:"get-a-quote",hero:{p:lead,st:"sample"},secs:[
+ qform(k,prod,"Your shipment details",k==="cbt"?"Please also confirm what this form should cover.":""),
+ {h2:"Indicative rates",st:"pending",b:need(["Rate table in Excel for this product, if an indicative rate should show after the form is sent."])}
+]}));
+
+page("enquiry-received",{t:"Enquiry received",url:"/get-a-quote/received/",st:"sample",up:"get-a-quote",hero:{h:"Thank you. We have your enquiry.",p:"An acknowledgement has been sent to your email.",st:"sample"},secs:[
+ {h2:"Your reference",st:"sample",b:`<div class="kv count"><div><small>Reference number (sample)</small><b id="rc-ref">PL-LCL-000123</b></div><div><small>Product</small><b id="rc-prod">LCL</b></div></div>`},
+ {h2:"Indicative rate",st:"sample",b:`<p><b>When a matching rate exists,</b> this page shows an estimate for the route and volume, marked as indicative.</p><p><b>When it does not,</b> it says: "Our team will quote you shortly."</p>`+need(["Rate tables in Excel for LCL, FCL, coastal and first-mile/last-mile. Without them every enquiry shows the second message."])},
+ {h2:"What happens next",st:"sample",b:`<div class="flow"><div>Your enquiry reaches our sales team.</div><div>A salesperson is assigned to you.</div><div>You receive a quote by email.</div></div><div class="row">${btn("Back to home","home",1)}${btn("Track a shipment","track",1)}</div>`}
+]});
+
+page("tools",{t:"Tools",url:"/tools/",st:"sample",hero:{p:"Plan, price and follow your shipment online.",st:"sample"},secs:[
+ {h2:"Online tools",st:"sample",b:tiles([["get-a-quote","Get a Quote","Seven product forms"],["track","Track Shipment","By job, BL or container number"],["lcl-schedules","LCL Schedules & Space","Sailings, cut-offs, transit times"],["cbm-calculator","CBM / Volumetric Calculator","Sea CBM and air volumetric weight"],["serviceable-areas","Serviceable Areas","Check a PIN code"]],"g3")}
+]});
+
+page("track",{t:"Track Shipment",url:"/track/",st:"sample",up:"tools",hero:{p:"Enter your job number, BL number or container number.",st:"sample"},secs:[
+ {h2:"Find your shipment",st:"sample",b:`<form class="row panel" data-track><input class="inp" id="tr-no" style="flex:1 1 260px" placeholder="Job, BL or container number" aria-label="Tracking number"><button class="btn">Track</button></form><div id="tr-out" class="panel" hidden><p style="margin-bottom:10px"><b>Sample result</b> for <span id="tr-echo"></span></p><ol class="steps"><li class="done">Booking confirmed</li><li class="done">Cargo received</li><li class="done">Departed origin port</li><li>Arrived at destination port</li><li>Out for delivery</li><li>Delivered</li></ol></div>`},
+ {h2:"Shipment status steps",st:"pending",b:need(["The status steps you want customers to see, and which number they will track by."])},
+ {h2:"Get email alerts",st:"sample",b:`<p>Enter your email to be told when the status changes.</p><form class="row" data-noop><input class="inp" id="tr-em" type="email" style="flex:1 1 260px;max-width:420px" placeholder="Email address" aria-label="Email address"><button class="btn ghost">Notify me</button></form>`},
+ {h2:"Automatic updates",st:"p2",b:`<ul><li>Automatic updates from carriers and container tracking providers.</li><li>WhatsApp and SMS alerts.</li></ul>`}
+]});
+
+page("lcl-schedules",{t:"LCL Schedules & Space",url:"/tools/lcl-schedules/",st:"pending",up:"tools",hero:{p:"Sailings, cut-offs, transit times and space available, by port.",st:"sample"},secs:[
+ {h2:"Sailing schedule",st:"pending",b:`<form class="row" data-noop><select class="inp" id="sc-pol" style="flex:1 1 200px;max-width:280px" aria-label="Port of loading"><option>Port of loading</option></select><select class="inp" id="sc-pod" style="flex:1 1 200px;max-width:280px" aria-label="Port of discharge"><option>Port of discharge</option></select><button class="btn ghost">Filter</button></form><div class="tw"><table><thead><tr><th>Port of loading</th><th>Port of discharge</th><th>Vessel / voyage</th><th>Cut-off</th><th>Sailing date</th><th>Arrival date</th><th>Transit</th><th>Space</th></tr></thead><tbody>${"<tr><td>Pending</td><td>Pending</td><td>Pending</td><td>Pending</td><td>Pending</td><td>Pending</td><td>Pending</td><td>Pending</td></tr>".repeat(3)}</tbody></table></div>`+need(["Your LCL sailing schedules: ports, cut-offs, sailing and arrival dates, transit times.","How you want space shown: CBM available, or simply Available / Limited / Full."])},
+ {h2:"Ready to book space?",st:"sample",b:`<div class="row">${btn("Send an LCL enquiry","quote-lcl")}${btn("Open the CBM calculator","cbm-calculator",1)}</div>`}
+]});
+
+page("cbm-calculator",{t:"CBM / Volumetric Calculator",url:"/tools/cbm-calculator/",st:"sample",up:"tools",hero:{p:"Work out CBM for sea freight and volumetric weight for air freight.",st:"sample"},secs:[
+ {h2:"Enter your cargo",st:"sample",b:`<div class="f panel" id="cbm"><label for="cb-l">Length (cm)<input id="cb-l" type="number" min="0" value="120"></label><label for="cb-w">Width (cm)<input id="cb-w" type="number" min="0" value="80"></label><label for="cb-h">Height (cm)<input id="cb-h" type="number" min="0" value="100"></label><label for="cb-q">Number of packages<input id="cb-q" type="number" min="1" value="4"></label><label for="cb-k">Total gross weight (kg)<input id="cb-k" type="number" min="0" value="950"></label></div><div class="kv count"><div><small>Sea: volume</small><b id="cb-cbm"></b></div><div><small>Sea: chargeable (W/M)</small><b id="cb-wm"></b></div><div><small>Air: volumetric weight</small><b id="cb-vol"></b></div><div><small>Air: chargeable weight</small><b id="cb-chg"></b></div></div><p class="note">Sea: 1 CBM is taken as 1,000 kg, and the higher of volume and weight is charged. Air: volumetric weight is length × width × height in cm, divided by 6,000.</p>`+need(["Confirm these are the rules you quote on."])},
+ {h2:"Get a price for this cargo",st:"sample",b:`<div class="row">${btn("Send an LCL enquiry","quote-lcl")}${btn("Send an air freight enquiry","quote-air",1)}</div>`}
+]});
+
+page("serviceable-areas",{t:"Serviceable Areas",url:"/tools/serviceable-areas/",st:"pending",up:"tools",hero:{p:"Check whether we pick up and deliver at your PIN code.",st:"sample"},secs:[
+ {h2:"Check a PIN code",st:"pending",b:`<form class="row panel" data-pin><input class="inp" id="pin-no" inputmode="numeric" maxlength="6" style="flex:1 1 220px" placeholder="6-digit PIN code" aria-label="PIN code"><button class="btn">Check</button></form><p id="pin-out" class="panel" hidden><b>Sample result.</b> PIN <span id="pin-echo"></span>: the real answer appears once your PIN list is loaded.</p>`+need(["The PIN codes or regions you serve, in Excel."])},
+ {h2:"Coverage map",st:"pending",b:img("Map of India with covered regions shaded.<br>Built from your PIN list.")}
+]});
+
+page("industries",{t:"Industries",url:"/industries/",st:"have",hero:{p:"Logistics matched to how your industry moves its goods.",st:"sample"},secs:[
+ {h2:"Industry solutions",st:"have",b:`<div class="tw"><table><thead><tr><th>Industry</th><th>Solutions</th></tr></thead><tbody>
+<tr><td>Agri business, construction material, cement, steel, tiles, coal, minerals</td><td>Primary and secondary transportation, multimodal, coastal transportation</td></tr>
+<tr><td>E-commerce, retail, fashion</td><td>Secondary distribution, intracity, warehousing</td></tr>
+<tr><td>Food, processed food, edible oil, milk, fisheries, QSR</td><td>Domestic transportation, cold chain solutions, secondary distribution</td></tr>
+<tr><td>Staples, groceries</td><td>Domestic transportation, secondary distribution, intracity</td></tr>
+<tr><td>3PL, LSPs, forwarders</td><td>Domestic transportation, EXIM transportation, LCL, FCL, air freight, customs clearance</td></tr>
+<tr><td>Shippers, exporters, importers, manufacturers, traders</td><td>EXIM transportation, LCL, FCL, air freight, customs clearance</td></tr>
+<tr><td>Shipping lines, NVOCCs</td><td>EXIM transportation</td></tr>
+<tr><td>White goods, electronics, banking, retail, pharma</td><td>Secondary distribution, EXIM transportation, LCL, FCL, air freight, customs clearance</td></tr>
+<tr><td>EPCs, infrastructure, power, defence, bulk movements</td><td>Project logistics, FCL, customs clearance</td></tr>
+<tr><td>Cars, automobile OEMs, earth-moving equipment OEMs</td><td>LCL, FCL, air freight, customs clearance, domestic transportation</td></tr>
+<tr><td>CNG, LNG, petroleum products, chemicals, drug formulation</td><td>LCL, FCL, customs clearance, domestic transportation</td></tr>
+</tbody></table></div><p class="note">From your current website, with spelling corrected. Each service will link to its page.</p>`},
+ {h2:"Find the right service",st:"sample",b:`<div class="row">${btn("See all services","services",1)}${btn("Get a Quote","get-a-quote")}</div>`}
+]});
+
+page("network",{t:"Network",url:"/network/",st:"pending",hero:{p:"Where we operate in India and abroad.",st:"sample",img:"Map showing your ports, ICDs and partner countries.<br>Built from your lists."},secs:[
+ {h2:"Domestic network",st:"partly",b:`<ul><li>14 sea ports</li><li>Major ICDs and PFTs</li><li>Major business hubs</li><li>Major SEZs and FTWZs</li><li>Metro cities, and 2nd and 3rd tier cities</li><li>Major manufacturing hubs, agro hubs and auto hubs</li></ul>`+need(["The names behind these lines: which ports, ICDs and cities."])},
+ {h2:"International network",st:"pending",b:need(["Countries and ports you serve, and overseas partners or agents you can name. Your current page is one world map image with no text."])},
+ {h2:"SAARC: Bangladesh and Nepal",st:"have",b:`<p>Our SAARC Nation Logistics service facilitates seamless transportation and supply chain management across the SAARC region, especially in countries like Bangladesh and Nepal. We ensure efficient customs clearance, timely delivery, and reliable distribution of goods.</p>`+need(["Confirm this is the right place for the SAARC service, or tell us where it belongs."])}
+]});
+
+page("resources",{t:"Resources",url:"/resources/",st:"sample",hero:{p:"Guides and answers for shippers.",st:"sample"},secs:[
+ {h2:"Browse resources",st:"sample",b:tiles([["blog","Blog","Articles from our team"],["incoterms","Incoterms 2020 Guide","The 11 terms in plain words"],["faqs","FAQs","Answers to common questions"],["restricted-cargo","Restricted Cargo","What can and cannot be shipped"]])}
+]});
+
+page("blog",{t:"Blog",url:"/resources/blog/",st:"sample",up:"resources",hero:{p:"News and practical guides from the Postman Logistics team.",st:"sample"},secs:[
+ {h2:"Latest articles",st:"sample",b:`<div class="grid g3"><a class="tile" href="#article">${img("Article photo","s")}<b>LCL or FCL: how to choose for your shipment</b><small>Starter article</small></a><a class="tile" href="#article">${img("Article photo","s")}<b>How CBM and chargeable weight are calculated</b><small>Starter article</small></a></div><p class="note">Two starter articles are included. Your team adds more from the admin area.</p>`}
+]});
+
+page("article",{t:"LCL or FCL: how to choose for your shipment",url:"/resources/blog/[article-title]/",st:"sample",up:"blog",hero:{p:"A short guide for first-time shippers.",st:"sample"},secs:[
+ {st:"sample",b:`<p>If your cargo does not fill a container, you have two choices. You can share a container with other shippers (LCL) or book a whole one for yourself (FCL).</p><p>LCL usually suits smaller volumes, because you pay for the space you use. FCL often makes sense as the volume grows, when the cargo is fragile or high in value, or when you want it to move without being handled alongside other cargo.</p><p>The quickest way to decide is to work out your volume in CBM and ask for both prices.</p><div class="row">${btn("Open the CBM calculator","cbm-calculator",1)}${btn("Get a Quote","get-a-quote")}</div>`}
+]});
+
+page("incoterms",{t:"Incoterms 2020 Guide",url:"/resources/incoterms/",st:"sample",up:"resources",hero:{p:"The 11 Incoterms in plain words: who arranges what, and where risk passes.",st:"sample"},secs:[
+ {h2:"The 11 terms",st:"sample",b:`<div class="tw"><table><thead><tr><th>Term</th><th>Name</th><th>Used for</th><th>In short</th></tr></thead><tbody>
+<tr><td><b>EXW</b></td><td>Ex Works</td><td>Any mode</td><td>The seller makes the goods available at its premises. The buyer arranges and pays for everything from there.</td></tr>
+<tr><td><b>FCA</b></td><td>Free Carrier</td><td>Any mode</td><td>The seller hands the goods, cleared for export, to the buyer's carrier at an agreed place.</td></tr>
+<tr><td><b>CPT</b></td><td>Carriage Paid To</td><td>Any mode</td><td>The seller pays carriage to the named destination. Risk passes when the goods reach the first carrier.</td></tr>
+<tr><td><b>CIP</b></td><td>Carriage and Insurance Paid To</td><td>Any mode</td><td>As CPT, and the seller also insures the goods.</td></tr>
+<tr><td><b>DAP</b></td><td>Delivered at Place</td><td>Any mode</td><td>The seller delivers to the named place, ready for unloading. The buyer handles import clearance and duties.</td></tr>
+<tr><td><b>DPU</b></td><td>Delivered at Place Unloaded</td><td>Any mode</td><td>The seller delivers and unloads at the named place. The buyer handles import clearance and duties.</td></tr>
+<tr><td><b>DDP</b></td><td>Delivered Duty Paid</td><td>Any mode</td><td>The seller delivers to the named place with import duties and taxes paid.</td></tr>
+<tr><td><b>FAS</b></td><td>Free Alongside Ship</td><td>Sea only</td><td>The seller places the goods alongside the vessel at the port of shipment.</td></tr>
+<tr><td><b>FOB</b></td><td>Free On Board</td><td>Sea only</td><td>The seller loads the goods on the vessel. Risk passes once they are on board.</td></tr>
+<tr><td><b>CFR</b></td><td>Cost and Freight</td><td>Sea only</td><td>The seller pays freight to the destination port. Risk passes once the goods are on board at origin.</td></tr>
+<tr><td><b>CIF</b></td><td>Cost, Insurance and Freight</td><td>Sea only</td><td>As CFR, and the seller also insures the goods.</td></tr>
+</tbody></table></div><p>DDU is an older term that is still used in trade. Under Incoterms 2020 the closest term is DAP.</p>`},
+ {h2:"Shipping on delivered terms?",st:"sample",b:`<div class="row">${btn("DDP / DDU enquiry","quote-ddp-ddu")}${btn("Get a Quote","get-a-quote",1)}</div>`}
+]});
+
+page("faqs",{t:"FAQs",url:"/resources/faqs/",st:"pending",up:"resources",hero:{p:"Answers to the questions we hear most.",st:"sample"},secs:[
+ {h2:"Questions and answers",st:"pending",b:`<div class="panel stack"><div><h4>What is the minimum volume you accept for LCL?</h4><p class="note">Answer pending from you.</p></div><div><h4>Which documents do I need for an import shipment?</h4><p class="note">Answer pending from you.</p></div><div><h4>How do I track my shipment?</h4><p>Use the Track Shipment page with your job, BL or container number.</p></div><div><h4>How quickly will I get a quote?</h4><p class="note">Answer pending from you.</p></div></div>`+need(["The questions your sales and customer service teams hear most, with answers. Up to 20. The four above are sample questions."])}
+]});
+
+page("restricted-cargo",{t:"Restricted Cargo",url:"/resources/restricted-cargo/",st:"pending",up:"resources",hero:{p:"What we do not carry, and what we carry with conditions.",st:"sample"},secs:[
+ {h2:"Cargo we do not accept",st:"pending",b:need(["Your list of cargo you do not accept."])},
+ {h2:"Cargo accepted with conditions",st:"pending",b:need(["Your policy on hazardous goods, live animals and perishables. Your current pages contradict each other on these."])},
+ {h2:"About this page",st:"pending",b:need(["Confirm you want one page replacing Banned Commodities and Dangerous Goods. The current Banned Commodities text will not be reused, because it reads like an express courier's list."])}
+]});
+
+page("about-us",{t:"About Us",url:"/about-us/",st:"have",hero:{p:"An integrated logistics services provider, working locally and globally.",st:"have",img:"Photo: your team or office.<br>Team photos received."},secs:[
+ {h2:"Who we are",st:"have",b:`<p>Postman Logistics is an integrated logistics services provider headquartered in Mumbai, India. We offer services in multiple segments of logistics: surface, sea freight, air freight, project cargo transportation, cargo terminals, and coastal shipping.</p><p>We specialize in Consolidation, Freight Forwarding, Groupage, Land-side Logistics and Multimodal Transportation, optimizing shipment delivery through road, rail, sea, and air transport.</p>`+need(["Confirm \"Mumbai\" or \"Navi Mumbai\", and whether \"cargo terminals\" is a service you offer."])},
+ {h2:"Our vision",st:"have",b:`<p class="lead" style="color:var(--ink)">Integrating international and domestic logistical strengths to create the best value for our customers.</p>`},
+ {h2:"Our management",st:"have",b:`<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(340px,1fr))"><div class="tile person">${img("Portrait.<br>High-resolution photo pending.","s")}<div class="stack" style="gap:6px"><b>Sanjay Bharati</b><small>Director & Co-Founder</small><span>With over two decades in logistics and supply chain, Mr. Sanjay Bharati has worked across primary and secondary transportation, contract logistics, EXIM logistics, 3PL services, project and multimodal logistics.</span></div></div><div class="tile person">${img("Portrait.<br>High-resolution photo pending.","s")}<div class="stack" style="gap:6px"><b>Prasad Mahadik</b><small>Director & Co-Founder</small><span>With over 25 years in shipping and logistics, Mr. Prasad Mahadik specialises in business development for import consolidation.</span></div></div></div>`},
+ {h2:"Licences and registrations",st:"have",b:`<div class="kv"><div><small>CIN</small><b class="code">U52241MH2024PTC424022</b></div><div><small>GST</small><b class="code">27AAOCP6837H1ZU</b></div><div><small>Licence</small><b>MTO licence</b></div><div><small>Licence</small><b>FSSAI licence</b></div></div>`},
+ {h2:"Our team",st:"pending",b:need(["Names, roles and photos of the team members you want to show, beyond the two directors."])},
+ {h2:"Our clients",st:"have",b:logos}
+]});
+
+page("careers",{t:"Careers",url:"/careers/",st:"pending",up:"about-us",hero:{p:"Build your career in logistics with a growing freight forwarding and consolidation team.",st:"sample",img:"Team photo.<br>Received."},secs:[
+ {h2:"Current openings",st:"pending",b:tiles([["job-opening","Job title","Location · Department"],["job-opening","Job title","Location · Department"]],"g3")+need(["Current openings: title, location, short description.","The email address that should receive applications."])},
+ {h2:"Do not see your role?",st:"sample",b:`<p>Send us your details and we will get in touch when something fits.</p><form class="f panel" data-noop><label for="ca-n">Name<input id="ca-n"></label><label for="ca-e">Email<input id="ca-e" type="email"></label><label for="ca-p">Phone<input id="ca-p" type="tel"></label><label for="ca-r">Role you are interested in<input id="ca-r"></label><label class="wide" for="ca-cv">CV (PDF or Word)<input id="ca-cv" type="file" disabled></label><div class="wide row"><button class="btn">Send application</button></div></form>`}
+]});
+
+page("job-opening",{t:"Job title",url:"/careers/[job-title]/",st:"pending",up:"careers",hero:{p:"Location · Department · Experience",st:"pending"},secs:[
+ {h2:"About the role",st:"pending",b:need(["For each opening: what the person will do, what you are looking for, and how to apply."])},
+ {h2:"Apply for this job",st:"sample",b:`<form class="f panel" data-noop><label for="jo-n">Name<input id="jo-n"></label><label for="jo-e">Email<input id="jo-e" type="email"></label><label for="jo-p">Phone<input id="jo-p" type="tel"></label><label class="wide" for="jo-cv">CV (PDF or Word)<input id="jo-cv" type="file" disabled></label><div class="wide row"><button class="btn">Apply</button></div></form>`}
+]});
+
+page("contact-us",{t:"Contact",url:"/contact-us/",st:"have",hero:{p:"Talk to our team about a shipment, a quote or a partnership.",st:"sample"},secs:[
+ {h2:"Head office",st:"have",b:`<div class="two"><div class="kv" style="grid-template-columns:1fr"><div><small>Address</small><b>Postman Logistics Private Limited, 1301, Mayuresh Chambers, Sector 11, CBD Belapur, Navi Mumbai, Maharashtra, India – 400614</b></div><div><small>Phone</small><b>+91-22-4455 3447</b></div><div><small>Email</small><b>info@postmanlogistics.com</b></div></div>${img("Map of the office location")}</div>`+need(["Confirm the building name. Your signboard reads \"Mayuresh Chamber\", your website \"Mayuresh Chambers\"."])},
+ {h2:"Office hours and branches",st:"pending",b:need(["Office hours.","Branch offices, if any, with address and phone.","A WhatsApp number, if you want one shown."])},
+ {h2:"Send us a message",st:"sample",b:form("contact","General enquiry")}
+]});
+
+[["privacy-policy","Privacy Policy","/privacy-policy/",["What information we collect","Why we collect it","Your consent and your rights under the DPDP Act, 2023","How long we keep it","Who we share it with","Grievance officer","How to contact us"],["Name and contact details of your grievance officer."]],
+ ["cookie-policy","Cookie Policy","/cookie-policy/",["What cookies are","Cookies this website uses: necessary, and analytics (Google Analytics, Microsoft Clarity, LinkedIn)","How to change your choice"],[]],
+ ["terms-of-use","Terms of Use","/terms-of-use/",["Using this website","Indicative quotes are estimates, not offers","Tracking information","Ownership of content","Limits of liability","Governing law"],[]]
+].forEach(([id,t,url,heads,pend])=>page(id,{t,url,st:"sample",hero:{p:"Template text, to be finalised by your lawyer before go-live.",st:"sample"},secs:[
+ {h2:"What this page covers",st:"sample",b:`<ol>${heads.map(h=>`<li>${h}</li>`).join("")}</ol>`+need([...pend,"Your lawyer's review and approval of the final text."])}
+]}));
+
+page("page-not-found",{t:"We could not find that page",url:"any wrong address",st:"sample",hero:{p:"The address may have changed. These links will get you back on track.",st:"sample",cta:[["Services","services",1],["Get a Quote","get-a-quote"],["Track Shipment","track",1],["Contact","contact-us",1]]},secs:[]});
+
+page("sitemap",{t:"Sitemap",url:"/sitemap/",st:"sample",hero:{p:"Every page of the website in one list.",st:"sample"},secs:[]});
+
+page("staff-admin",{t:"Staff admin",url:"/admin/",st:"sample",hero:{p:"Where your team runs the website. Login required. Not visible to visitors or to Google.",st:"sample"},secs:[
+ {h2:"Leads",st:"sample",b:`<div class="tw"><table><thead><tr><th>Reference</th><th>Product</th><th>Source</th><th>Status</th><th>Assigned to</th></tr></thead><tbody><tr><td>PL-LCL-000123</td><td>LCL</td><td>Google</td><td>New</td><td>Salesperson A</td></tr><tr><td>PL-FCL-000122</td><td>FCL</td><td>LinkedIn</td><td>Quoted</td><td>Salesperson B</td></tr><tr><td>PL-AIR-000121</td><td>Air Freight</td><td>Direct</td><td>Booked</td><td>Salesperson A</td></tr></tbody></table></div><p class="note">Sample rows. Statuses: New, Quoted, Negotiation, Booked, Lost. The customer gets an automatic acknowledgement email.</p>`+need(["Sales team list, and who should receive enquiries for each product."])},
+ {h2:"Other admin areas",st:"sample",b:tiles([["","Master data","Ports, ICDs and CFS, commodities, currencies, areas"],["","Rate tables","Upload rates in Excel for indicative quotes"],["","Schedules and space","Enter or upload LCL sailings"],["","Tracking","Update shipment status"],["","Careers","Post openings, see applications"],["","Content","Edit pages, articles, FAQs and images"]],"g3")}
+]});
+
+page("login",{t:"Login",url:"/login/",st:"p2",hero:{p:"One login for customers, agents and employees, with two-step login.",st:"p2"},secs:[
+ {h2:"Sign in",st:"p2",b:`<form class="f panel" data-noop style="max-width:520px"><label class="wide" for="lg-e">Email or mobile number<input id="lg-e"></label><label class="wide" for="lg-o">One-time code (OTP or authenticator app)<input id="lg-o" inputmode="numeric"></label><div class="wide row"><button class="btn">Sign in</button></div></form><p class="note">Each user sees only their own data.</p>`}
+]});
+page("customer-portal",{t:"Customer Portal",url:"/portal/customer/",st:"p2",up:"login",hero:{p:"Customers manage their shipments and pay online.",st:"p2"},secs:[
+ {h2:"My account",st:"p2",b:tiles([["","Bookings","Place and view bookings"],["","Quotes","See and accept quotes"],["","Tracking","All shipments in one list"],["","Documents","BL and invoices"],["","Payments","UPI, cards and net banking"]],"g3")}
+]});
+page("agent-portal",{t:"Agent / Supplier Portal",url:"/portal/agent/",st:"p2",up:"login",hero:{p:"Agents and suppliers send rates and updates without email.",st:"p2"},secs:[
+ {h2:"My workspace",st:"p2",b:tiles([["","Rate uploads","Upload rate sheets"],["","Shipment updates","Update shipment status"],["","Documents","Exchange documents"]],"g3")}
+]});
+page("employee-portal",{t:"Employee Portal",url:"/portal/employee/",st:"p2",up:"login",hero:{p:"Your team works leads and quotations, and management sees the numbers.",st:"p2"},secs:[
+ {h2:"My workspace",st:"p2",b:tiles([["","Leads","Manage and assign leads"],["","Quotation builder","Create, revise and email PDF quotes. AI drafts a suggestion, and your team approves before anything is sent"],["","Dashboards","Enquiries, quotes, bookings and conversion by product, source and salesperson"]],"g3")}
+]});
+page("hindi-website",{t:"Hindi website",url:"/hi/ + the same addresses",st:"p2",hero:{p:"The public pages of this website in Hindi.",st:"p2"},secs:[
+ {h2:"How it works",st:"p2",b:`<ul><li>Every public page gets a Hindi version at the same address with /hi/ in front.</li><li>Hindi text is translated with AI and reviewed by your team.</li><li>The language switch keeps the visitor on the same page.</li></ul>`}
+]});
+page("ai-assistant",{t:"AI chat assistant",url:"on every page, and on WhatsApp",st:"p2",hero:{p:"Answers questions, gives tracking status and takes enquiry details, on the website and on WhatsApp.",st:"p2"},secs:[
+ {h2:"What it does",st:"p2",b:`<ul><li>Answers questions from your own website content.</li><li>Gives tracking status for a job, BL or container number.</li><li>Collects enquiry details and creates a lead.</li><li>Hands the chat to your team when needed.</li><li>Replies in the visitor's language.</li></ul>`}
+]});
+
+/* ---------- menus ---------- */
+const NAV=[
+ {l:"Services",hub:"services",groups:[["Ocean",["lcl-consolidation","fcl","coastal-shipping"]],["Air",["air-freight"]],["Land",["inland-transport","first-mile-last-mile"]],["Specialised and support",["customs-clearance","project-break-bulk","warehousing-cold-chain"]]]},
+ {l:"Tools",hub:"tools",items:["get-a-quote","track","lcl-schedules","cbm-calculator","serviceable-areas"]},
+ {l:"Industries",to:"industries"},
+ {l:"Network",to:"network"},
+ {l:"Resources",hub:"resources",items:["blog","incoterms","faqs","restricted-cargo"]},
+ {l:"About",items:["about-us","careers"]},
+ {l:"Contact",to:"contact-us"}
+];
+const BLURB={"lcl-consolidation":"Import and export consolidation","fcl":"Full container loads","coastal-shipping":"Between Indian ports","air-freight":"Urgent and high-value cargo","inland-transport":"Road, rail and EXIM","first-mile-last-mile":"Pick-up and delivery","customs-clearance":"Import and export clearance","project-break-bulk":"Heavy and oversized cargo","warehousing-cold-chain":"Storage and temperature control",
+ "get-a-quote":"Seven product forms","track":"By job, BL or container number","lcl-schedules":"Sailings, cut-offs and space","cbm-calculator":"Sea CBM and air weight","serviceable-areas":"Check a PIN code","blog":"Articles from our team","incoterms":"The 11 terms in plain words","faqs":"Common questions","restricted-cargo":"What can be shipped","about-us":"Company, directors, licences","careers":"Openings and applications"};
+const TOP={},UP={};
+NAV.forEach(n=>{const kids=[...(n.items||[]),...(n.groups||[]).flatMap(g=>g[1])];kids.forEach(k=>{TOP[k]=n.l;if(n.hub)UP[k]=n.hub});if(n.hub)TOP[n.hub]=n.l;if(n.to)TOP[n.to]=n.l});
+ORDER.forEach(id=>{if(P[id].up)UP[id]=P[id].up});
+const topOf=id=>{let x=id,g=0;while(!TOP[x]&&UP[x]&&g++<5)x=UP[x];return TOP[x]};
+const $=s=>document.querySelector(s);
+const link=id=>`<a href="#${id}">${P[id].t}</a>`;
+const navLink=id=>`<a href="#${id}">${ICF[id]?ic(ICF[id]):""}<span>${P[id].t}<small>${BLURB[id]||""}</small></span></a>`;
+function buildNav(){
+  $("#nav").innerHTML=NAV.map((n,i)=>{
+    if(n.to)return `<li><a class="top" data-top="${n.l}" href="#${n.to}">${n.l}</a></li>`;
+    const body=n.groups?`<div class="cols">${n.groups.map(([g,ids])=>`<div><h4>${g}</h4>${ids.map(navLink).join("")}</div>`).join("")}</div>`:n.items.map(navLink).join("");
+    const all=n.hub?`<a class="all" href="#${n.hub}">All ${n.l.toLowerCase()} →</a>`:"";
+    return `<li class="dd${n.groups?"":" rel"}"><button class="top" data-top="${n.l}" aria-expanded="false" aria-controls="dd${i}">${n.l}<span class="car" aria-hidden="true"></span></button><div class="drop${n.groups?"":" narrow"}" id="dd${i}">${body}${all}</div></li>`}).join("");
+}
+function setOpen(li,on){document.querySelectorAll(".nav>li.open").forEach(x=>{if(x!==li||!on){x.classList.remove("open");x.querySelector(".top").setAttribute("aria-expanded","false")}});if(li&&on){li.classList.add("open");li.querySelector(".top").setAttribute("aria-expanded","true")}}
+function buildFoot(){
+  const col=(h,ids)=>`<div><h4>${h}</h4>${ids.map(link).join("")}</div>`;
+  $("#foot").innerHTML=`<div class="w"><p class="tagline">LCL consolidation · Freight forwarding · Multimodal transport</p><div class="cols">${col("Services",NAV[0].groups.flatMap(g=>g[1]))}${col("Tools",NAV[1].items)}${col("Company",["about-us","industries","network","careers","contact-us"])}${col("Resources",NAV[4].items)}<div><h4>Postman Logistics Private Limited</h4><p>1301, Mayuresh Chambers, Sector 11, CBD Belapur, Navi Mumbai – 400614</p><p style="margin-top:8px">+91-22-4455 3447<br>info@postmanlogistics.com</p><p style="margin-top:8px">CIN U52241MH2024PTC424022<br>GST 27AAOCP6837H1ZU</p><p style="margin-top:8px">Facebook · X · LinkedIn · Instagram</p></div></div><div class="bottom"><span>© 2026 Postman Logistics Private Limited</span>${["privacy-policy","cookie-policy","terms-of-use","sitemap"].map(link).join("")}<a href="#staff-admin">Staff admin</a></div></div>`;
+}
+
+/* ---------- shared home pieces ---------- */
+const SV=[["lcl-consolidation","LCL Consolidation","Import and export consolidation. Share a container and pay for the space you use."],["fcl","FCL","Full containers for import, export and cross trade."],["air-freight","Air Freight","For urgent and high-value cargo."],["coastal-shipping","Coastal Shipping","Cargo moved by sea between Indian ports."],["inland-transport","Inland Transport","Road, rail and EXIM transport across India."],["first-mile-last-mile","First-Mile / Last-Mile","Pick-up and delivery to and from ports, ICDs, CFS and airports."],["customs-clearance","Customs Clearance","Import and export clearance."],["project-break-bulk","Project & Break-Bulk Cargo","Heavy, oversized and bulk cargo."],["warehousing-cold-chain","Warehousing & Cold Chain","Storage, distribution and temperature-controlled cargo."]];
+const sv=ids=>SV.filter(s=>ids.includes(s[0]));
+const QOPT=`<option value="quote-lcl">LCL (less than a container)</option><option value="quote-fcl">FCL (full container)</option><option value="quote-air">Air freight</option><option value="quote-ddp-ddu">DDP / DDU (delivered to the door)</option><option value="quote-coastal">Coastal shipping</option><option value="quote-first-last-mile">First-mile / last-mile</option><option value="quote-airport-lcl-cbt">Airport LCL / CBT</option>`;
+const LIC=`<div><small>CIN</small><b class="code">U52241MH2024PTC424022</b></div><div><small>GST</small><b class="code">27AAOCP6837H1ZU</b></div><div><small>Licence</small><b>MTO licence</b></div><div><small>Licence</small><b>FSSAI licence</b></div>`;
+const NUMS=`<div class="kv count"><div><b>XX+</b><small>Integrated products</small></div><div><b>XX+</b><small>Domestic sea ports covered</small></div><div><b>XX+</b><small>Delivery locations across India</small></div><div><b>XX+</b><small>Customers</small></div><div><b>XX+</b><small>Flexi warehouses</small></div></div>`+need(["Today's figures for these five lines. Your current website stores 15+, 14+, 2000+, 350+ and 5+. Nothing is shown until you confirm."]);
+const NET=need(["The ports, ICDs and cities you serve in India, as a list.","The countries and partners you work with abroad, as a list."]);
+const GUIDES=[["incoterms","Incoterms 2020 Guide","Who arranges what, and where risk passes."],["faqs","FAQs","Answers to the questions we hear most."],["article","LCL or FCL: how to choose","A short guide for first-time shippers."]];
+const CTA={h2:"Have a shipment to move?",st:"sample",dark:1,b:`<p class="lead">Tell us what, from where and to where. You get a reference number straight away and a quote from our team.</p><div class="row">${btn("Get a Quote","get-a-quote")}${btn("Contact us","contact-us",1)}</div>`};
+const sec=s=>`<section class="sec${s.dark?" dark":""}${s.full?" full":""}"><div class="w sg"><div class="sh${s.h2?"":" nh"}">${s.h2?`<h2>${s.h2}</h2>`:""}${chip(s.st)}</div><div class="body">${s.b}</div></div></section>`;
+
+/* ---------- home A: tools first ---------- */
+function homeA(){
+  const hero=`<section class="hero hA dark"><div class="w two"><div class="stack g20"><div>${chip("sample")}</div><h1>LCL and multimodal freight, door to door.</h1><p class="lead">We consolidate, ship and deliver your cargo by sea, air, road and rail. One team, from pick-up to delivery.</p><ul class="ticks"><li>Import and export LCL consolidation</li><li>FCL, air, coastal and inland transport</li><li>First-mile pick-up and last-mile delivery</li></ul></div>
+<div class="ap on-light"><div class="tabs" role="tablist"><button role="tab" aria-selected="true" data-tab="ap-q">${ic("quote")}Get a quote</button><button role="tab" aria-selected="false" data-tab="ap-t">${ic("track")}Track</button><button role="tab" aria-selected="false" data-tab="ap-s">${ic("cal")}Schedules</button></div>
+<form class="stack" id="ap-q" data-go-select="ap-prod"><label for="ap-prod">What are you shipping?<select class="inp" id="ap-prod">${QOPT}</select></label><div class="f2"><label for="ap-from">From<input class="inp" id="ap-from" placeholder="Port, city or PIN code"></label><label for="ap-to">To<input class="inp" id="ap-to" placeholder="Port, city or PIN code"></label></div><button class="btn">Start my enquiry</button><span class="note">You get a reference number as soon as you submit.</span></form>
+<form class="stack" id="ap-t" data-go="track" hidden><label for="ap-no">Job, BL or container number<input class="inp" id="ap-no"></label><button class="btn">Track shipment</button></form>
+<div class="stack" id="ap-s" hidden><p>See LCL sailings, cut-off dates, transit times and space available.</p><div>${btn("View LCL schedules","lcl-schedules")}</div></div></div></div></section>
+<section class="proof"><div class="w">${LIC}<span style="margin-left:auto">${chip("have")}</span></div></section>`;
+  return hero+[
+   {h2:"What we move",st:"sample",b:`<div class="svcA"><a class="feat" href="#lcl-consolidation"><span class="ic">${ic("box")}</span><div class="stack" style="gap:10px"><span class="eyebrow">Our core service</span><h3>LCL Consolidation</h3><p>Import and export consolidation. Share a container and pay only for the space you use.</p><span class="more">See the LCL service →</span></div></a>${tiles(SV.slice(1).map(([i,t])=>[i,t,BLURB[i]]))}</div>`},
+   {h2:"Need something specific?",st:"sample",b:tiles([["lcl-schedules","LCL Schedules & Space","Sailings, cut-offs and space"],["cbm-calculator","CBM Calculator","Work out volume and chargeable weight"],["serviceable-areas","Serviceable Areas","Check your PIN code"],["quote-ddp-ddu","Door delivery (DDP / DDU)","Delivered-duty enquiries"]])},
+   {h2:"How it works",st:"sample",b:`<div class="flow"><div><b>First mile</b>We collect the cargo from your door.</div><div><b>Port, ICD or CFS</b>It is consolidated and cleared.</div><div><b>Sea or air</b>It moves on the booked sailing or flight.</div><div><b>Last mile</b>We deliver to the consignee.</div></div>`},
+   {h2:"Where we operate",st:"pending",b:`<div class="two"><div class="stack">${NET}<div class="row">${btn("See the network","network",1)}</div></div>${img("Map of your coverage.<br>Built from your lists.")}</div>`},
+   {h2:"Trusted by",st:"have",b:logos+`<p class="note">Client logos received. Each is shown with the client's permission.</p>`},
+   {h2:"Postman Logistics in numbers",st:"pending",dark:1,b:NUMS},
+   {h2:"Guides for shippers",st:"sample",b:tiles(GUIDES,"g3")},
+   CTA].map(sec).join("");
+}
+
+/* ---------- home B: guided ---------- */
+function homeB(){
+  const modes=[["md-sea","Sea",["lcl-consolidation","fcl","coastal-shipping"]],["md-air","Air",["air-freight"]],["md-land","Land",["inland-transport","first-mile-last-mile"]],["md-sp","Specialised",["customs-clearance","project-break-bulk","warehousing-cold-chain"]]];
+  const hero=`<section class="hB"><div class="w stack g20" style="justify-items:center"><div>${chip("sample")}</div><h1>Ship any size. We handle the rest.</h1><p class="lead">LCL consolidation and multimodal freight for importers and exporters, from pick-up to delivery.</p>
+<p class="eyebrow" style="margin-top:18px">What do you need today?</p>
+<div class="choices" role="tablist" style="width:100%"><button role="tab" aria-selected="true" data-tab="ch-q">${ic("quote")}Get a price<small>For LCL, FCL, air and more</small></button><button role="tab" aria-selected="false" data-tab="ch-t">${ic("track")}Track a shipment<small>By job, BL or container number</small></button><button role="tab" aria-selected="false" data-tab="ch-s">${ic("cal")}See LCL sailings<small>Cut-offs, transit times, space</small></button><button role="tab" aria-selected="false" data-tab="ch-c">${ic("chat")}Talk to our team<small>Not sure what you need?</small></button></div>
+<div class="cpanel" id="ch-q"><b>What are you shipping?</b><div class="pills"><a href="#quote-lcl">LCL</a><a href="#quote-fcl">FCL</a><a href="#quote-air">Air Freight</a><a href="#quote-ddp-ddu">DDP / DDU</a><a href="#quote-coastal">Coastal</a><a href="#quote-first-last-mile">First-Mile / Last-Mile</a><a href="#quote-airport-lcl-cbt">Airport LCL / CBT</a></div><span class="note">Each form asks only what we need. You get a reference number straight away.</span></div>
+<form class="cpanel" id="ch-t" data-go="track" hidden><label for="ch-no" style="width:100%;max-width:520px;text-align:left">Job, BL or container number<input class="inp" id="ch-no"></label><button class="btn">Track shipment</button></form>
+<div class="cpanel" id="ch-s" hidden><p>See LCL sailings, cut-off dates, transit times and space available, by port.</p>${btn("View LCL schedules","lcl-schedules")}</div>
+<div class="cpanel" id="ch-c" hidden><p>Call <b>+91-22-4455 3447</b> or write to <b>info@postmanlogistics.com</b>.</p>${btn("Send us a message","contact-us")}</div>
+</div></section>`;
+  return hero+[
+   {h2:"Choose how you ship",st:"sample",b:`<div class="pills" role="tablist">${modes.map(([id,l],i)=>`<button role="tab" aria-selected="${i===0}" data-tab="${id}">${l}</button>`).join("")}</div>${modes.map(([id,l,ids],i)=>`<div id="${id}"${i?" hidden":""}>${tiles(sv(ids),"g3")}</div>`).join("")}`},
+   {h2:"Why Postman Logistics",st:"have",b:`<div class="grid g3"><div class="pillar"><span class="n">01</span><h3>Domestic and international strength</h3><p>We leverage our existing strengths in domestic and international freight, with a strong customer base.</p></div><div class="pillar"><span class="n">02</span><h3>Every mode, every size</h3><p>We integrate services across modes for efficient, varied-size shipments, connecting multiple locations through hubs.</p></div><div class="pillar"><span class="n">03</span><h3>A growing network</h3><p>We strive to extend our network to encompass all Indian cities and key global origins and destinations.</p></div></div><p class="note" style="text-align:center">Text from "Why choose us" on your current website. The headings are new.</p>`},
+   {h2:"Licensed, registered and trusted",st:"have",b:`<div class="kv">${LIC}</div>`+logos},
+   {h2:"From your door to theirs",st:"sample",b:`<div class="line"><div><b>First mile</b><span class="note">We collect the cargo from your door.</span></div><div><b>Port, ICD or CFS</b><span class="note">It is consolidated and cleared.</span></div><div><b>Sea or air</b><span class="note">It moves on the booked sailing or flight.</span></div><div><b>Last mile</b><span class="note">We deliver to the consignee.</span></div></div>`},
+   {h2:"Postman Logistics in numbers",st:"pending",b:NUMS},
+   {h2:"Helpful guides",st:"sample",b:tiles(GUIDES,"g3")},
+   CTA].map(sec).join("");
+}
+
+/* ---------- home C: journey ---------- */
+function homeC(){
+  const stages=[["Pick-up","We collect the cargo from your factory or warehouse.","first-mile-last-mile"],["Consolidation","Your cargo is combined with other shipments at the CFS and loaded into a container.","lcl-consolidation"],["Clearance","Export and import documents and customs formalities are handled.","customs-clearance"],["Sea or air","The cargo moves on the booked sailing or flight.","fcl"],["Delivery","We deliver to the consignee's door, with storage if it is needed.","inland-transport"]];
+  const extra={3:["air-freight","coastal-shipping"],4:["warehousing-cold-chain","first-mile-last-mile"]};
+  const hero=`<section class="hero hC dark"><div class="w two"><div class="stack g20"><div>${chip("sample")}</div><h1>First mile to last mile. One team.</h1><p class="lead">LCL consolidation, full containers, air freight and inland transport, handled end to end.</p><div class="row">${btn("Get a Quote","get-a-quote")}${btn("See our services","services",1)}</div></div>${img("Main photo of your operations: containers, warehouse or vehicles.<br>Pending from you.")}</div>
+<div class="w"><div class="quick"><a href="#get-a-quote">${ic("quote")}<span>Get a quote<small>Seven product forms</small></span></a><a href="#track">${ic("track")}<span>Track shipment<small>Job, BL or container</small></span></a><a href="#lcl-schedules">${ic("cal")}<span>LCL schedules<small>Sailings and space</small></span></a><a href="#cbm-calculator">${ic("calc")}<span>CBM calculator<small>Volume and weight</small></span></a></div></div></section>`;
+  const journey={h2:"Follow your cargo, step by step",st:"sample",full:1,b:`<div><div class="jr" role="tablist">${stages.map(([t],i)=>`<button role="tab" aria-selected="${i===0}" data-tab="jr-${i}"><span class="no">STEP ${i+1}</span>${t}</button>`).join("")}</div>${stages.map(([t,d,id],i)=>`<div class="jd" id="jr-${i}"${i?" hidden":""}><div class="stack"><h3 style="font-size:26px">${t}</h3><p>${d}</p><div class="row">${btn(P[id].t,id)}${(extra[i]||[]).map(x=>btn(P[x].t,x,1)).join("")}</div></div>${img("Photo of this step.<br>Pending from you.","s")}</div>`).join("")}</div>`};
+  const spot=`<section class="sec"><div class="w spot"><div class="stack g20"><div class="row"><span class="eyebrow">Our core service</span>${chip("have")}</div><h2>LCL consolidation</h2><p>Loads from multiple shippers are stuffed into a single container and shipped to a common destination. Postman Logistics offers inbound services from major ports across the world, through a dedicated network of worldwide partners and overseas agents.</p><ul class="ticks"><li>Import consolidation and export forwarding</li><li>Ex-factory pick-up to delivery at the doorstep</li><li>Pay for the space you use</li></ul><div class="row">${btn("See the LCL service","lcl-consolidation")}${btn("View LCL schedules","lcl-schedules",1)}</div></div>${img("Photo: LCL cargo at a CFS or warehouse.<br>Pending from you.")}</div></section>`;
+  return hero+sec(journey)+spot+[
+   {h2:"Everything else we move",st:"sample",b:`<div class="rows">${SV.slice(1).map(([i,t])=>`<a href="#${i}">${ic(ICF[i])}<b>${t}</b><span>${BLURB[i]}</span><span class="ar">→</span></a>`).join("")}</div>`},
+   {h2:"Industries we serve",st:"have",b:`<div class="tags">${["Agri business","Cement, steel and minerals","E-commerce and retail","Food and QSR","Staples and groceries","3PL and forwarders","Exporters and importers","Shipping lines and NVOCCs","White goods and electronics","Pharma","EPC, infrastructure and power","Automobiles","Chemicals and petroleum"].map(x=>`<span>${x}</span>`).join("")}</div><div class="row">${btn("See solutions by industry","industries",1)}</div>`},
+   {h2:"Led by people who have done this for decades",st:"have",dark:1,b:`<div class="kv"><div><b>Sanjay Bharati</b><small>Director & Co-Founder. Over two decades in logistics and supply chain.</small></div><div><b>Prasad Mahadik</b><small>Director & Co-Founder. Over 25 years in shipping and logistics.</small></div></div><div class="kv">${LIC}</div><div class="row">${btn("About us","about-us",1)}</div>`},
+   {h2:"In numbers",st:"pending",b:NUMS},
+   {h2:"Trusted by",st:"have",b:logos},
+   {h2:"Guides for shippers",st:"sample",b:tiles(GUIDES,"g3")},
+   CTA].map(sec).join("");
+}
+const HOME={a:homeA,b:homeB,c:homeC};
+const HEADLINE={a:"LCL and multimodal freight, door to door",b:"Ship any size. We handle the rest",c:"First mile to last mile. One team"};
+const LD={a:"Quote, tracking and schedules sit in the banner. For visitors who arrive knowing what they want.",b:"The page asks what the visitor needs, then shows the path. For first-time visitors.",c:"The page tells the first-mile to last-mile story and puts LCL in the spotlight."};
+
+/* ---------- rendering ---------- */
+let lastProd="LCL",L="a";
+function crumbs(id){const c=[];let x=id,g=0;while(UP[x]&&g++<5){x=UP[x];c.unshift(x)}return `<nav class="crumb" aria-label="Breadcrumb"><a href="#home">Home</a>${c.map(k=>` › <a href="#${k}">${P[k].t}</a>`).join("")} › ${P[id].t}</nav>`}
+function pageHero(id){const p=P[id],h=p.hero;const cta=(h.cta||[]).map(([t,to,g])=>to===id?`<a class="btn${g?" ghost":""}" href="#${id}" data-jump="form">${t}</a>`:btn(t,to,g)).join("");
+  return `<section class="phero"><div class="w">${crumbs(id)}<div class="ph${h.img?" has-img":""}"><div class="stack"><h1>${h.h||p.t}</h1><p class="lead">${h.p}</p><div>${chip(h.st)}</div>${cta?`<div class="row">${cta}</div>`:""}</div>${h.img?img(h.img):""}</div></div></section>`}
+function sitemapBody(){
+  const li=(id,sub)=>`<li${sub?' class="sub"':""}>${link(id)}${chip(P[id].st)}</li>`;
+  const quotes=ORDER.filter(i=>i.startsWith("quote-"));
+  const g=(h,rows)=>`<div><h3>${h}</h3><ul>${rows}</ul></div>`;
+  return `<section class="sec"><div class="w"><div class="tree">
+${g("Home",li("home"))}
+${g("Services",li("services")+NAV[0].groups.flatMap(x=>x[1]).map(i=>li(i,1)).join(""))}
+${g("Tools",li("tools")+li("get-a-quote",1)+quotes.map(i=>li(i,1)).join("")+li("enquiry-received",1)+["track","lcl-schedules","cbm-calculator","serviceable-areas"].map(i=>li(i,1)).join(""))}
+${g("Industries and network",li("industries")+li("network"))}
+${g("Resources",li("resources")+li("blog",1)+li("article",1)+li("incoterms",1)+li("faqs",1)+li("restricted-cargo",1))}
+${g("About and contact",li("about-us")+li("careers",1)+li("job-opening",1)+li("contact-us"))}
+${g("Legal and other",["privacy-policy","cookie-policy","terms-of-use","page-not-found","staff-admin"].map(i=>li(i)).join(""))}
+${g("Phase 2",["login","customer-portal","agent-portal","employee-portal","hindi-website","ai-assistant"].map(i=>li(i)).join(""))}
+</div></div></section>`}
+function route(){
+  let id=location.hash.slice(1)||"home";if(!P[id])id="page-not-found";
+  const p=P[id];setOpen(null);$("#nav").classList.remove("show");$("#burger").setAttribute("aria-expanded","false");
+  const v=$("#view");
+  v.innerHTML=id==="home"?HOME[L]():pageHero(id)+p.secs.map(sec).join("")+(id==="sitemap"?sitemapBody():"");
+  document.title=(id==="home"?"Postman Logistics | "+HEADLINE[L]:p.t+" | Postman Logistics");
+  const top=topOf(id);document.querySelectorAll(".nav .top").forEach(b=>b.classList.toggle("cur",b.dataset.top===top));
+  if(id==="enquiry-received"){const code={"LCL":"LCL","FCL":"FCL","Air Freight":"AIR","DDP / DDU":"DDP","Coastal":"CST","First-Mile / Last-Mile":"FML","Airport LCL / CBT":"CBT"}[lastProd]||"ENQ";$("#rc-prod").textContent=lastProd;$("#rc-ref").textContent="PL-"+code+"-000123"}
+  if(id==="cbm-calculator")cbm();
+  if(route.ready){window.scrollTo(0,0);v.style.animation="none";void v.offsetWidth;v.style.animation="";const b=$("#bar");b.classList.remove("go");void b.offsetWidth;b.classList.add("go")}
+  route.ready=true;
+}
+function setLayout(l,quiet){
+  L="abc".includes(l)&&l.length===1?l:"a";document.body.dataset.l=L;
+  document.querySelectorAll("button[data-l]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.l===L));
+  $("#ldesc").textContent=LD[L];
+  try{localStorage.setItem("pl-layout",L)}catch(e){}
+  if(!quiet)route();
+}
+function cbm(){
+  const v=id=>Math.max(0,parseFloat($("#"+id).value)||0),f=n=>n.toLocaleString("en-IN",{maximumFractionDigits:2});
+  const vol=v("cb-l")*v("cb-w")*v("cb-h")*Math.max(1,v("cb-q")),kg=v("cb-k"),c=vol/1e6,vw=vol/6000;
+  $("#cb-cbm").textContent=f(c)+" CBM";$("#cb-wm").textContent=f(Math.max(c,kg/1000))+" W/M";
+  $("#cb-vol").textContent=f(vw)+" kg";$("#cb-chg").textContent=f(Math.max(vw,kg))+" kg";
+}
+
+/* ---------- events ---------- */
+const desktop=()=>window.matchMedia("(min-width:981px)").matches;
+document.addEventListener("click",e=>{
+  const lb=e.target.closest("button[data-l]");
+  if(lb){setLayout(lb.dataset.l);return}
+  const top=e.target.closest(".nav button.top");
+  if(top){const li=top.parentElement;setOpen(li,!li.classList.contains("open"));return}
+  if(!e.target.closest(".drop"))setOpen(null);
+  const tab=e.target.closest("[data-tab]");
+  if(tab){tab.parentElement.querySelectorAll("[data-tab]").forEach(b=>{const on=b===tab;b.setAttribute("aria-selected",on);$("#"+b.dataset.tab).hidden=!on})}
+  const jump=e.target.closest("[data-jump]");
+  if(jump){e.preventDefault();const f=$("#view form[data-quote]");if(f)f.scrollIntoView({behavior:"smooth",block:"center"})}
+  const a=e.target.closest('a[href^="#"]');
+  if(a&&!jump&&a.getAttribute("href")===location.hash)route();
+});
+document.addEventListener("mouseover",e=>{if(!desktop())return;const li=e.target.closest(".nav>li");if(!li)return;if(!li.classList.contains("dd"))setOpen(null);else if(!li.classList.contains("open"))setOpen(li,true)});
+$(".hdr").addEventListener("mouseleave",()=>{if(desktop())setOpen(null)});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")setOpen(null)});
+$("#burger").addEventListener("click",()=>{const o=$("#nav").classList.toggle("show");$("#burger").setAttribute("aria-expanded",o)});
+document.addEventListener("submit",e=>{
+  e.preventDefault();const f=e.target;
+  if(f.dataset.quote){lastProd=f.dataset.quote;if(location.hash==="#enquiry-received")route();else location.hash="enquiry-received"}
+  else if(f.dataset.go)location.hash=f.dataset.go;
+  else if(f.dataset.goSelect)location.hash=$("#"+f.dataset.goSelect).value;
+  else if("track" in f.dataset){$("#tr-echo").textContent=$("#tr-no").value.trim()||"your number";$("#tr-out").hidden=false}
+  else if("pin" in f.dataset){$("#pin-echo").textContent=$("#pin-no").value.trim()||"not entered";$("#pin-out").hidden=false}
+});
+document.addEventListener("input",e=>{if(e.target.closest("#cbm"))cbm()});
+function ck(){$("#cookie").hidden=true;$("#welcome").hidden=false}
+$("#ck-yes").addEventListener("click",ck);$("#ck-no").addEventListener("click",ck);
+$("#welcome").addEventListener("click",e=>{if(e.target.closest("a,button"))$("#welcome").hidden=true});
+$("#chat-btn").addEventListener("click",()=>{const b=$("#chat-box");b.hidden=!b.hidden;$("#chat-btn").setAttribute("aria-expanded",!b.hidden)});
+$("#chat-box").addEventListener("click",e=>{if(e.target.closest("a")){$("#chat-box").hidden=true}});
+window.addEventListener("hashchange",route);
+let saved="a";try{saved=localStorage.getItem("pl-layout")||"a"}catch(e){}
+buildNav();buildFoot();setLayout(saved,true);route();
+</script>
+</body>
+</html>
